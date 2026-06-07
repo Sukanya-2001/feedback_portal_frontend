@@ -290,7 +290,7 @@ export default function Navbar() {
                 </Button>
                 <Button
                   component={Link}
-                  href="/signup"
+                  href="/auth/signup"
                   variant="contained"
                   color="primary"
                   sx={{

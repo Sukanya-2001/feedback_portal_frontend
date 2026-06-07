@@ -3,11 +3,12 @@
 import React from "react";
 import { Box, Container, Typography, Link } from "@mui/material";
 import { useMockDatabase } from "@/components/MockDatabase";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Footer() {
-  const { currentUser } = useMockDatabase();
+  const pathname = usePathname();
 
-  if (currentUser) return null;
+  if (pathname.startsWith("/dashboard")) return null;
 
   return (
     <Box
@@ -46,7 +47,7 @@ export default function Footer() {
               Explore Projects
             </Link>
             <Link
-              href="/auth/login"
+              href="/terms"
               variant="body2"
               color="text.secondary"
               sx={{
@@ -54,10 +55,10 @@ export default function Footer() {
                 "&:hover": { color: "primary.main" },
               }}
             >
-              Developer Login
+              Terms & Conditions
             </Link>
             <Link
-              href="/auth/signup"
+              href="/privacy"
               variant="body2"
               color="text.secondary"
               sx={{
@@ -65,7 +66,7 @@ export default function Footer() {
                 "&:hover": { color: "primary.main" },
               }}
             >
-              Create Account
+              Privacy Policy
             </Link>
           </Box>
         </Box>

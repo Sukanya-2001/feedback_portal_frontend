@@ -24,11 +24,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [resetSuccess, setResetSuccess] = useState(false);
 
   // Redirect if already logged in
   React.useEffect(() => {
     if (currentUser) {
       router.push("/dashboard");
+    }
+    if (typeof window !== "undefined" && window.location.search.includes("reset=success")) {
+      setResetSuccess(true);
     }
   }, [currentUser, router]);
 
@@ -83,6 +87,12 @@ export default function LoginPage() {
             </Alert>
           )}
 
+          {resetSuccess && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              Password reset successful! You can now log in with your new password.
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <TextField
@@ -98,17 +108,30 @@ export default function LoginPage() {
                 }}
               />
 
-              <TextField
-                fullWidth
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                slotProps={{
-                  inputLabel: { shrink: true }
-                }}
-              />
+              <Box>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  slotProps={{
+                    inputLabel: { shrink: true }
+                  }}
+                />
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 0.5 }}>
+                  <Button
+                    component={Link}
+                    href="/auth/forgot-password"
+                    variant="text"
+                    size="small"
+                    sx={{ p: 0, minWidth: "auto", textTransform: "none", fontWeight: 600, fontSize: "0.82rem" }}
+                  >
+                    Forgot Password?
+                  </Button>
+                </Box>
+              </Box>
 
               <Button
                 type="submit"
@@ -156,7 +179,7 @@ export default function LoginPage() {
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
               Don't have an account?{" "}
-              <Button component={Link} href="/signup" variant="text" sx={{ p: 0, minWidth: "auto", fontWeight: 700 }}>
+              <Button component={Link} href="/auth/signup" variant="text" sx={{ p: 0, minWidth: "auto", fontWeight: 700 }}>
                 Sign Up
               </Button>
             </Typography>

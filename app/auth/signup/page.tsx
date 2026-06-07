@@ -56,9 +56,9 @@ export default function SignupPage() {
       return;
     }
 
-    const success = signup(name, email);
+    const success = signup(name, email, password);
     if (success) {
-      router.push("/dashboard");
+      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } else {
       setError("Sign up failed. Please try again.");
     }

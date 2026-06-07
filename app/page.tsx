@@ -109,7 +109,7 @@ export default function Home() {
                   </Button>
                   <Button
                     component={Link}
-                    href="/signup"
+                    href="/auth/signup"
                     variant="outlined"
                     color="primary"
                     size="large"
