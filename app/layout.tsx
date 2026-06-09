@@ -6,6 +6,7 @@ import { MockDatabaseProvider } from "@/components/MockDatabase";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Box } from "@mui/material";
+import ReduxProvider from "@/components/Wrapper/reduxWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,7 +49,7 @@ export default function RootLayout({
               component="main"
               sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
             >
-              {children}
+              <ReduxProvider>{children}</ReduxProvider>
             </Box>
             <Footer />
           </ThemeRegistry>

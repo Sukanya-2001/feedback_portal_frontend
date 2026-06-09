@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import { setCookieClient } from "@/util/common";
 
 export default function LoginPage() {
   const { login, currentUser } = useMockDatabase();
@@ -52,6 +53,8 @@ export default function LoginPage() {
 
     const success = login(email);
     if (success) {
+      setCookieClient(process.env.ACCESS_TOKEN!, 'accessToken');
+      setCookieClient(process.env.REFRESH_TOKEN!, 'refreshToken');
       router.push("/dashboard");
     } else {
       setError("Login failed. Check your inputs.");
@@ -63,6 +66,7 @@ export default function LoginPage() {
     setPassword("password123");
     const success = login(quickEmail);
     if (success) {
+
       router.push("/dashboard");
     }
   };
