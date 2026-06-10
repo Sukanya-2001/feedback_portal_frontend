@@ -6,7 +6,7 @@ import { MockDatabaseProvider } from "@/components/MockDatabase";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Box } from "@mui/material";
-import ReduxProvider from "@/components/Wrapper/reduxWrapper";
+import ReduxProvider from "@/components/Wrapper/ReduxWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

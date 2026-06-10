@@ -1,0 +1,50 @@
+import { feedbackCreate, feedbackList, feedbackUpdate, feedbackDelete, feedbackReply } from "@/api/hooks/feedbacks/feedback.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { allkeys } from "./allKeys";
+
+export const useFeedbackCreate = () => {
+  return useMutation({
+    mutationKey: [allkeys.FEEDBACK_CREATE],
+    mutationFn: feedbackCreate,
+  });
+};
+
+export const useFeedbackList = (projectId: string) => {
+  return useQuery({
+    queryKey: [allkeys.FEEDBACK_LIST, projectId],
+    queryFn: () => feedbackList(projectId),
+  });
+};
+
+export const useFeedbackUpdate = () => {
+  return useMutation({
+    mutationKey: [allkeys.FEEDBACK_UPDATE],
+    mutationFn: ({
+      feedbackId,
+      payload,
+    }: {
+      feedbackId: string;
+      payload: { feedback: string };
+    }) => feedbackUpdate(feedbackId, payload),
+  });
+};
+
+export const useFeedbackDelete = () => {
+  return useMutation({
+    mutationKey: [allkeys.FEEDBACK_DELETE],
+    mutationFn: feedbackDelete,
+  });
+};
+
+export const useReplyonFeedback = () => {
+  return useMutation({
+    mutationKey: [allkeys.FEEDBACK_REPLY],
+    mutationFn: ({
+      feedbackId,
+      payload,
+    }: {
+      feedbackId: string;
+      payload: { comment: string };
+    }) => feedbackReply(feedbackId, payload),
+  });
+};
