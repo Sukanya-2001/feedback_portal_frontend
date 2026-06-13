@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useMockDatabase, Feedback } from "@/components/MockDatabase";
+import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
 import {
   Typography,
   Box,
@@ -20,18 +22,30 @@ import WebIcon from "@mui/icons-material/Web";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 
 export default function SavedFeedbacksPage() {
-  const { currentUser, projects, feedbacks, toggleSaveFeedback } = useMockDatabase();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
 
-  if (!currentUser) return null;
+  // Local state for projects and feedbacks
+  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
+  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
 
-  // Get owned projects and their IDs
-  const userProjects = projects.filter((p) => p.userId === currentUser.id);
+  if (!isLoggedIn || !userData) return null;
+
+  // Filter owned projects. If user has no projects matching, show user-1 by default
+  const userProjects = projectsList.filter(
+    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
+  );
   const userProjectIds = userProjects.map((p) => p.id);
 
   // Get saved feedbacks belonging to owned projects
-  const savedFeedbacks = feedbacks.filter(
+  const savedFeedbacks = feedbacksList.filter(
     (f) => userProjectIds.includes(f.projectId) && f.isSaved
   );
+
+  const toggleSaveFeedback = (feedbackId: string) => {
+    setFeedbacksList((prev) =>
+      prev.map((f) => (f.id === feedbackId ? { ...f, isSaved: !f.isSaved } : f))
+    );
+  };
 
   // Group feedbacks by project
   const feedbacksByProject: { [projectId: string]: Feedback[] } = {};

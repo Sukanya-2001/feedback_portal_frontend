@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMockDatabase, Project } from "@/components/MockDatabase";
+import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
 import ProjectCard from "@/components/ProjectCard";
 import {
   Typography,
@@ -44,7 +46,12 @@ const CORE_CATEGORIES = [
 ];
 
 export default function MyProjectsPage() {
-  const { currentUser, projects, feedbacks, createProject, updateProject, deleteProject } = useMockDatabase();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
+
+  // Local state for projects and feedbacks
+  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
+  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
 
@@ -61,10 +68,66 @@ export default function MyProjectsPage() {
   const [contact, setContact] = useState("");
   const [formError, setFormError] = useState("");
 
-  if (!currentUser) return null;
+  const createProject = (
+    name: string,
+    description: string,
+    image: string,
+    tags: string[],
+    website?: string,
+    contact?: string
+  ) => {
+    const newProject: Project = {
+      id: `proj-${Date.now()}`,
+      name,
+      description,
+      image: image.trim() || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+      tags: tags.length > 0 ? tags : ["General"],
+      website,
+      contact,
+      userId: "user-1",
+      userName: userData?.fullname || "Anonymous User",
+      createdAt: new Date().toISOString(),
+    };
+    setProjectsList((prev) => [newProject, ...prev]);
+  };
 
-  // Filter user specific projects
-  const userProjects = projects.filter((p) => p.userId === currentUser.id);
+  const updateProject = (
+    projectId: string,
+    name: string,
+    description: string,
+    image: string,
+    tags: string[],
+    website?: string,
+    contact?: string
+  ) => {
+    setProjectsList((prev) =>
+      prev.map((p) =>
+        p.id === projectId
+          ? {
+              ...p,
+              name,
+              description,
+              image: image.trim() || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+              tags: tags.length > 0 ? tags : ["General"],
+              website,
+              contact,
+            }
+          : p
+      )
+    );
+  };
+
+  const deleteProject = (projectId: string) => {
+    setProjectsList((prev) => prev.filter((p) => p.id !== projectId));
+    setFeedbacksList((prev) => prev.filter((f) => f.projectId !== projectId));
+  };
+
+  if (!isLoggedIn || !userData) return null;
+
+  // Filter user specific projects (show user-1 projects if Alice Smith, else match by fullname)
+  const userProjects = projectsList.filter(
+    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
+  );
 
   // Extract unique tags for filtering
   const allUserTags = Array.from(new Set(userProjects.flatMap((p) => p.tags)));
@@ -118,7 +181,8 @@ export default function MyProjectsPage() {
       return;
     }
 
-    const categoriesToSave = selectedCategories.length > 0 ? selectedCategories : ["General"];
+    const categoriesToSave =
+      selectedCategories.length > 0 ? selectedCategories : ["General"];
 
     if (editingProject) {
       updateProject(
@@ -128,7 +192,7 @@ export default function MyProjectsPage() {
         image,
         categoriesToSave,
         website,
-        contact
+        contact,
       );
     } else {
       createProject(
@@ -137,7 +201,7 @@ export default function MyProjectsPage() {
         image,
         categoriesToSave,
         website,
-        contact
+        contact,
       );
     }
 
@@ -145,7 +209,11 @@ export default function MyProjectsPage() {
   };
 
   const handleDelete = (project: Project) => {
-    if (confirm(`Are you sure you want to delete "${project.name}"? This will permanently erase all feedbacks received.`)) {
+    if (
+      confirm(
+        `Are you sure you want to delete "${project.name}"? This will permanently erase all feedbacks received.`,
+      )
+    ) {
       deleteProject(project.id);
     }
   };
@@ -159,13 +227,21 @@ export default function MyProjectsPage() {
   return (
     <Box sx={{ width: "100%" }}>
       {/* Title Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+        }}
+      >
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800 }} gutterBottom>
             My Projects
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage your registered applications, review configurations, or add new projects.
+            Manage your registered applications, review configurations, or add
+            new projects.
           </Typography>
         </Box>
         <Button
@@ -197,13 +273,17 @@ export default function MyProjectsPage() {
                       <SearchIcon color="action" />
                     </InputAdornment>
                   ),
-                }
+                },
               }}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ alignSelf: "center", mr: 1, fontWeight: 600 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ alignSelf: "center", mr: 1, fontWeight: 600 }}
+              >
                 Category:
               </Typography>
               <Chip
@@ -219,8 +299,8 @@ export default function MyProjectsPage() {
                   label={tag}
                   size="small"
                   clickable
-                  color={selectedTag === tag ? "primary" : "default"}
                   onClick={() => setSelectedTag(tag)}
+                  color={selectedTag === tag ? "primary" : "default"}
                 />
               ))}
             </Box>
@@ -229,7 +309,7 @@ export default function MyProjectsPage() {
       </Paper>
 
       {/* Projects Grid List */}
-      {filteredProjects.length === 0 ? (
+      {userProjects.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -251,8 +331,14 @@ export default function MyProjectsPage() {
               ? "Try modifying your search query or filters."
               : "Register your first application to start gathering reviews!"}
           </Typography>
-          {(searchQuery || selectedTag !== "all") ? (
-            <Button variant="text" onClick={() => { setSearchQuery(""); setSelectedTag("all"); }}>
+          {searchQuery || selectedTag !== "all" ? (
+            <Button
+              variant="text"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedTag("all");
+              }}
+            >
               Reset Filters
             </Button>
           ) : (
@@ -272,7 +358,14 @@ export default function MyProjectsPage() {
           {filteredProjects.map((project) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.id}>
               {/* Box container wrapping the Card to add management overlay actions */}
-              <Box sx={{ position: "relative", height: "100%", display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 {/* Management Toolbar overlays at top left */}
                 <Box
                   sx={{
@@ -291,22 +384,37 @@ export default function MyProjectsPage() {
                   }}
                 >
                   <Tooltip title="Edit project">
-                    <IconButton size="small" onClick={() => handleOpenDialog(project)} color="primary">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleOpenDialog(project)}
+                      color="primary"
+                    >
                       <EditIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete project">
-                    <IconButton size="small" onClick={() => handleDelete(project)} color="error">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDelete(project)}
+                      color="error"
+                    >
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Copy public review link">
-                    <IconButton size="small" onClick={() => handleShare(project)}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleShare(project)}
+                    >
                       <ShareIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </Box>
-                <ProjectCard project={project} feedbacks={feedbacks} isOwner={false} />
+                <ProjectCard
+                  project={project}
+                  feedbacks={feedbacksList}
+                  isOwner={false}
+                />
               </Box>
             </Grid>
           ))}
@@ -314,13 +422,28 @@ export default function MyProjectsPage() {
       )}
 
       {/* CRUD dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5, fontWeight: 700 }}>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            fontWeight: 700,
+          }}
+        >
           <LibraryAddIcon color="primary" />
           {editingProject ? "Update Project Details" : "Register New Project"}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
-          <DialogContent dividers sx={{ display: "flex", flexDirection: "column", gap: 3, py: 3 }}>
+          <DialogContent
+            dividers
+            sx={{ display: "flex", flexDirection: "column", gap: 3, py: 3 }}
+          >
             <TextField
               fullWidth
               label="Project Name"
@@ -330,7 +453,7 @@ export default function MyProjectsPage() {
               required
               error={formError.includes("name")}
               slotProps={{
-                inputLabel: { shrink: true }
+                inputLabel: { shrink: true },
               }}
             />
 
@@ -345,7 +468,7 @@ export default function MyProjectsPage() {
               required
               error={formError.includes("description")}
               slotProps={{
-                inputLabel: { shrink: true }
+                inputLabel: { shrink: true },
               }}
             />
 
@@ -357,11 +480,12 @@ export default function MyProjectsPage() {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
                 slotProps={{
-                  inputLabel: { shrink: true }
+                  inputLabel: { shrink: true },
                 }}
               />
               <FormHelperText>
-                Provide a direct URL to an image. Left empty, a custom gradient covers automatically.
+                Provide a direct URL to an image. Left empty, a custom gradient
+                covers automatically.
               </FormHelperText>
             </Box>
 
@@ -381,7 +505,7 @@ export default function MyProjectsPage() {
                     label="Project Categories"
                     placeholder="Choose categories..."
                     slotProps={{
-                      inputLabel: { shrink: true }
+                      inputLabel: { shrink: true },
                     }}
                   />
                 )}
@@ -400,7 +524,7 @@ export default function MyProjectsPage() {
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
               </Grid>
@@ -412,7 +536,7 @@ export default function MyProjectsPage() {
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
               </Grid>

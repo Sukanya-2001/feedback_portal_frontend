@@ -1,22 +1,25 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { baseUrlApi } from "../endpoints";
-import { parseCookies } from 'nookies';
+import { parseCookies } from "nookies";
+import { toast } from "sonner";
 
 const axiosInstance = axios.create({
-    baseURL: baseUrlApi,
-})
+  baseURL: baseUrlApi,
+});
 
 let oauthAppAccessToken: string | null = null;
 
-export const setOAuthAppAccessToken = (_accessToken: typeof oauthAppAccessToken) => {
-    oauthAppAccessToken = _accessToken
-}
+export const setOAuthAppAccessToken = (
+  _accessToken: typeof oauthAppAccessToken,
+) => {
+  oauthAppAccessToken = _accessToken;
+};
 
 export const getOAuthAppAccessToken = () => oauthAppAccessToken;
 
 export const refreshToken = async () => {
-    return 'access-token';
-}
+  return "access-token";
+};
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const cookies = parseCookies();
@@ -28,19 +31,34 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   }
 
   if (_token && config.headers) {
-    config.headers['Authorization'] = `Bearer ${_token}`;
+    config.headers["Authorization"] = `Bearer ${_token}`;
   }
-  if (config.data && typeof config.data === 'object') {
-    config.data ;
+  if (config.data && typeof config.data === "object") {
+    config.data;
   }
 
   return config;
 });
 
 axiosInstance.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    return Promise.reject(error); // ❗ NO retry
+  (response) => response,
+  (error) => {
+    const errorData = error.response?.data;
+
+    let message =
+      errorData?.message || "Something went wrong. Please try again later";
+
+    if (errorData?.errors) {
+      const firstError = Object.values(errorData.errors)[0];
+
+      if (Array.isArray(firstError)) {
+        message = firstError[0];
+      }
+    }
+
+    toast.error(message);
+
+    return Promise.reject(error);
   },
 );
 

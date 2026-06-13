@@ -62,7 +62,7 @@ const INITIAL_USERS: User[] = [
   { id: "user-2", name: "Bob Jones", email: "bob@gmail.com", password: "bob123" },
 ];
 
-const INITIAL_PROJECTS: Project[] = [
+export const INITIAL_PROJECTS: Project[] = [
   {
     id: "proj-1",
     name: "TaskFlow Manager",
@@ -101,7 +101,7 @@ const INITIAL_PROJECTS: Project[] = [
   }
 ];
 
-const INITIAL_FEEDBACKS: Feedback[] = [
+export const INITIAL_FEEDBACKS: Feedback[] = [
   {
     id: "feed-1",
     projectId: "proj-1",

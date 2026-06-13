@@ -16,7 +16,7 @@ export const login = async (payload: { email: string; password: string }) => {
 };
 
 export const signUp = async (payload: {
-  fullname: string;
+  fullName: string;
   email: string;
   password: string;
 }) => {

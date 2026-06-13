@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { useMockDatabase } from "@/components/MockDatabase";
 import {
   Box,
   Container,
@@ -22,7 +21,6 @@ import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 
 export default function Home() {
   const theme = useTheme();
-  const { projects, feedbacks } = useMockDatabase();
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -142,7 +140,7 @@ export default function Home() {
                 <Box sx={{ display: "flex", gap: 3 }}>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h3" sx={{ fontWeight: 800 }} color="primary.main">
-                      {projects.length}
+                      10
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Registered Projects
@@ -150,7 +148,7 @@ export default function Home() {
                   </Box>
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h3" sx={{ fontWeight: 800 }} color="secondary.main">
-                      {feedbacks.length}
+                      10
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Total Feedbacks Left

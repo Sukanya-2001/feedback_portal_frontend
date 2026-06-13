@@ -4,7 +4,8 @@ export const SignUpSchema = yup.object({
   fullName: yup
     .string()
     .trim()
-    .min(2, "Full name must be at least 2 charecters"),
+    .min(2, "Full name must be at least 2 charecters")
+    .required("Fullname is required"),
   email: yup
     .string()
     .trim()

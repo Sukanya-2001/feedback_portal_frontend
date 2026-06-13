@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMockDatabase, Feedback } from "@/components/MockDatabase";
 import {
   Typography,
   Box,
@@ -25,9 +24,16 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ReplyIcon from "@mui/icons-material/Reply";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
 
 export default function FeedbacksPage() {
-  const { currentUser, projects, feedbacks, toggleSaveFeedback, replyToFeedback } = useMockDatabase();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
+
+  // Local state for projects and feedbacks
+  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
+  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
@@ -37,29 +43,31 @@ export default function FeedbacksPage() {
   const [replyText, setReplyText] = useState("");
   const [replyError, setReplyError] = useState("");
 
-  if (!currentUser) return null;
+  if (!isLoggedIn || !userData) return null;
 
-  // Filter projects created by current user
-  const userProjects = projects.filter((p) => p.userId === currentUser.id);
+  // Filter owned projects. If user has no projects matching, show user-1 by default
+  const userProjects = projectsList.filter(
+    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
+  );
   const userProjectIds = userProjects.map((p) => p.id);
 
-  // Filter feedbacks for user's projects
-  let filteredFeedbacks = feedbacks.filter((f) => userProjectIds.includes(f.projectId));
+  // Filter feedbacks belonging to owned projects
+  const userFeedbacks = feedbacksList.filter((f) =>
+    userProjectIds.includes(f.projectId)
+  );
 
-  // Apply project filter
-  if (selectedProjectId !== "all") {
-    filteredFeedbacks = filteredFeedbacks.filter((f) => f.projectId === selectedProjectId);
-  }
+  // Filter feedbacks by project dropdown selection
+  const filteredProjectIdFeedbacks = selectedProjectId === "all"
+    ? userFeedbacks
+    : userFeedbacks.filter((f) => f.projectId === selectedProjectId);
 
   // Sort feedbacks
-  filteredFeedbacks = [...filteredFeedbacks].sort((a, b) => {
+  const filteredFeedbacks = [...filteredProjectIdFeedbacks].sort((a, b) => {
     if (sortBy === "newest") {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-    if (sortBy === "oldest") {
+    } else {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     }
-    return 0;
   });
 
   const handleOpenReplyForm = (feedbackId: string) => {
@@ -77,8 +85,29 @@ export default function FeedbacksPage() {
       setReplyError("Reply text cannot be empty.");
       return;
     }
-    replyToFeedback(feedbackId, replyText);
+    setFeedbacksList((prev) =>
+      prev.map((f) =>
+        f.id === feedbackId
+          ? {
+              ...f,
+              reply: {
+                comment: replyText,
+                createdAt: new Date().toISOString(),
+              },
+            }
+          : f
+      )
+    );
     setActiveReplyId(null);
+    setReplyText("");
+  };
+
+  const toggleSaveFeedback = (feedbackId: string) => {
+    setFeedbacksList((prev) =>
+      prev.map((f) =>
+        f.id === feedbackId ? { ...f, isSaved: !f.isSaved } : f
+      )
+    );
   };
 
   return (
@@ -91,7 +120,8 @@ export default function FeedbacksPage() {
             Feedbacks Hub
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage, filter, and reply to reviews left on all your active products.
+            Manage, filter, and reply to reviews left on all your active
+            products.
           </Typography>
         </Box>
       </Box>
@@ -170,11 +200,10 @@ export default function FeedbacksPage() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           {filteredFeedbacks.map((f) => {
             const hasReply = !!f.reply;
-            const canReply = !!f.guestEmail && !hasReply;
 
             return (
               <Paper key={f.id} variant="outlined" sx={{ p: 3, borderRadius: 3, position: "relative" }}>
-                {/* Save Bookmark Badge */}
+                
                 <Box sx={{ position: "absolute", top: 18, right: 18 }}>
                   <IconButton onClick={() => toggleSaveFeedback(f.id)} color={f.isSaved ? "warning" : "default"}>
                     {f.isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
@@ -214,13 +243,10 @@ export default function FeedbacksPage() {
                   </Typography>
                 </Box>
 
-
-
                 <Typography variant="body1" color="text.primary" sx={{ mb: 2, whiteSpace: "pre-line" }}>
                   {f.comment}
                 </Typography>
 
-                {/* Developer Response Section (display nested reply if exists) */}
                 {hasReply && (
                   <Box sx={{ mt: 3, pl: 3, borderLeft: "3px solid #0d9488" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
@@ -238,7 +264,6 @@ export default function FeedbacksPage() {
                   </Box>
                 )}
 
-                {/* Reply triggers and forms */}
                 <Box sx={{ mt: 2, display: "flex", flexFlow: "column", gap: 2 }}>
                   {!hasReply && (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -262,7 +287,6 @@ export default function FeedbacksPage() {
                     </Box>
                   )}
 
-                  {/* Collapsible inline reply input */}
                   <Collapse in={activeReplyId === f.id}>
                     <Paper variant="outlined" sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 2 }}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>

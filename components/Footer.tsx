@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Box, Container, Typography, Link } from "@mui/material";
-import { useMockDatabase } from "@/components/MockDatabase";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Footer() {

@@ -2,12 +2,10 @@ import { BaseApiResponse } from "@/api/common/interface";
 
 export interface LoginResponse extends BaseApiResponse {
   data: {
-    fullname: string;
-    email: string;
-    isVerified: boolean;
+    userExist: { fullname: string; email: string; isVerified: boolean };
+    accessToken: string;
+    refreshToken: string;
   };
-  accessToken: string;
-  refreshToken: string;
 }
 
 export interface SignUpResponse extends BaseApiResponse {

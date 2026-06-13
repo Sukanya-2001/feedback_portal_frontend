@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import { MockDatabaseProvider } from "@/components/MockDatabase";
@@ -7,16 +6,16 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Box } from "@mui/material";
 import ReduxProvider from "@/components/Wrapper/ReduxWrapper";
+import { Toaster, toast } from "sonner";
+import QueryProvider from "@/components/Wrapper/QueryProvider";
 
-const geistSans = Geist({
+const geistSans = {
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+};
 
-const geistMono = Geist_Mono({
+const geistMono = {
   variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+};
 
 export const metadata: Metadata = {
   title: "FeedbackPortal - Project Feedback Management System",
@@ -42,18 +41,21 @@ export default function RootLayout({
           backgroundColor: "#f8fafc",
         }}
       >
-        <MockDatabaseProvider>
-          <ThemeRegistry>
-            <Navbar />
-            <Box
-              component="main"
-              sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-            >
-              <ReduxProvider>{children}</ReduxProvider>
-            </Box>
-            <Footer />
-          </ThemeRegistry>
-        </MockDatabaseProvider>
+        <ReduxProvider>
+          <MockDatabaseProvider>
+            <ThemeRegistry>
+              <Navbar />
+              <Box
+                component="main"
+                sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+              >
+                <QueryProvider>{children}</QueryProvider>
+                <Toaster />
+              </Box>
+              <Footer />
+            </ThemeRegistry>
+          </MockDatabaseProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

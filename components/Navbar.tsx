@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useMockDatabase } from "./MockDatabase";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { setLogout } from "@/redux-toolkit/slices/user.slice";
+import { deleteCookieValue } from "@/util/common";
 import {
   AppBar,
   Toolbar,
@@ -25,7 +28,8 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 
 export default function Navbar() {
-  const { currentUser, logout } = useMockDatabase();
+  const dispatch = useDispatch();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
   const router = useRouter();
   const pathname = usePathname();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -47,8 +51,10 @@ export default function Navbar() {
     setAnchorElNav(null);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+    await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
+    dispatch(setLogout());
     handleCloseUserMenu();
     router.push("/");
   };
@@ -193,7 +199,7 @@ export default function Navbar() {
 
           {/* Auth/User Action Controls */}
           <Box sx={{ flexGrow: 0 }}>
-            {currentUser ? (
+            {isLoggedIn && userData ? (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Typography
                   variant="body2"
@@ -203,7 +209,7 @@ export default function Navbar() {
                     color: "text.primary",
                   }}
                 >
-                  {currentUser.name}
+                  {userData.fullname}
                 </Typography>
                 <Tooltip title="Account settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -217,7 +223,7 @@ export default function Navbar() {
                         fontSize: "0.95rem",
                       }}
                     >
-                      {currentUser.name.charAt(0).toUpperCase()}
+                      {(userData.fullname || "U").charAt(0).toUpperCase()}
                     </Avatar>
                   </IconButton>
                 </Tooltip>
@@ -239,7 +245,7 @@ export default function Navbar() {
                 >
                   <MenuItem disabled>
                     <Typography variant="caption" color="text.secondary">
-                      Logged in as: <strong>{currentUser.email}</strong>
+                      Logged in as: <strong>{userData.email}</strong>
                     </Typography>
                   </MenuItem>
                   <Divider />

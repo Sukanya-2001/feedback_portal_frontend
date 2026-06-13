@@ -3,7 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMockDatabase } from "./MockDatabase";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { setLogout } from "@/redux-toolkit/slices/user.slice";
+import { deleteCookieValue } from "@/util/common";
 import {
   Box,
   List,
@@ -31,9 +34,10 @@ interface SidebarProps {
 export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser, logout } = useMockDatabase();
+  const dispatch = useDispatch();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
 
-  if (!currentUser) return null;
+  if (!isLoggedIn || !userData) return null;
 
   const menuItems = [
     { text: "Overview", icon: <DashboardIcon />, path: "/dashboard" },
@@ -43,8 +47,10 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
     { text: "My Profile", icon: <AccountBoxIcon />, path: "/dashboard/profile" },
   ];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+    await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
+    dispatch(setLogout());
     if (onCloseMobileDrawer) onCloseMobileDrawer();
     router.push("/");
   };
@@ -77,14 +83,14 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
             fontWeight: 700,
           }}
         >
-          {currentUser.name.charAt(0).toUpperCase()}
+          {(userData.fullname || "U").charAt(0).toUpperCase()}
         </Avatar>
         <Box sx={{ overflow: "hidden" }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }} noWrap>
-            {currentUser.name}
+            {userData.fullname}
           </Typography>
           <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>
-            {currentUser.email}
+            {userData.email}
           </Typography>
         </Box>
       </Box>

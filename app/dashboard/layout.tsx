@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useMockDatabase } from "@/components/MockDatabase";
 import Sidebar from "@/components/Sidebar";
 import {
   Box,
@@ -20,11 +19,20 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { setLogout } from "@/redux-toolkit/slices/user.slice";
+import { deleteCookieValue } from "@/util/common";
 
 const SIDEBAR_WIDTH = 260;
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { currentUser, logout } = useMockDatabase();
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const dispatch = useDispatch();
+  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,14 +40,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Auth redirection check
   useEffect(() => {
-    if (!currentUser) {
+    if (!isLoggedIn) {
       router.push("/auth/login");
     }
-  }, [currentUser, router]);
+  }, [isLoggedIn, router]);
 
-  if (!currentUser) {
+  if (!isLoggedIn) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", bgcolor: "#f8fafc" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          bgcolor: "#f8fafc",
+        }}
+      >
         <Typography variant="body1">Redirecting to login...</Typography>
       </Box>
     );
@@ -57,8 +73,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setAnchorElUser(null);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+    await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
+    dispatch(setLogout());
     handleCloseUserMenu();
     router.push("/");
   };
@@ -68,7 +86,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (pathname === "/dashboard") return "Overview";
     if (pathname.startsWith("/dashboard/projects")) return "My Projects";
     if (pathname.startsWith("/dashboard/feedbacks")) return "All Feedbacks";
-    if (pathname.startsWith("/dashboard/saved-feedbacks")) return "Saved Feedbacks";
+    if (pathname.startsWith("/dashboard/saved-feedbacks"))
+      return "Saved Feedbacks";
     if (pathname.startsWith("/dashboard/profile")) return "My Profile";
     return "Dashboard";
   };
@@ -88,7 +107,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           color: "text.primary",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between", minHeight: { xs: 64, md: 70 } }}>
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+            minHeight: { xs: 64, md: 70 },
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {/* Hamburger for mobile */}
             <IconButton
@@ -102,7 +126,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </IconButton>
 
             {/* Breadcrumb / Section name */}
-            <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.015em" }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, letterSpacing: "-0.015em" }}
+            >
               {getViewTitle()}
             </Typography>
           </Box>
@@ -111,9 +138,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Typography
               variant="body2"
-              sx={{ display: { xs: "none", sm: "block" }, fontWeight: 600, color: "text.primary" }}
+              sx={{
+                display: { xs: "none", sm: "block" },
+                fontWeight: 600,
+                color: "text.primary",
+              }}
             >
-              {currentUser.name}
+              {userData?.fullname ?? "Unkown User"}
             </Typography>
             <Tooltip title="User actions">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -126,7 +157,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     fontSize: "0.85rem",
                   }}
                 >
-                  {currentUser.name.charAt(0).toUpperCase()}
+                  {(userData?.fullname || "U").charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
             </Tooltip>
@@ -147,16 +178,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <MenuItem disabled>
                 <Typography variant="caption" color="text.secondary">
-                  Logged in as: <strong>{currentUser.email}</strong>
+                  Logged in as: <strong>{userData?.email}</strong>
                 </Typography>
               </MenuItem>
               <Divider />
-              <MenuItem onClick={() => { handleCloseUserMenu(); router.push("/dashboard/profile"); }}>
+              <MenuItem
+                onClick={() => {
+                  handleCloseUserMenu();
+                  router.push("/dashboard/profile");
+                }}
+              >
                 <Typography align="center">My Profile</Typography>
               </MenuItem>
               <MenuItem onClick={handleLogout}>
-                <ExitToAppIcon fontSize="small" sx={{ mr: 1, color: "error.main" }} />
-                <Typography align="center" color="error.main">Logout</Typography>
+                <ExitToAppIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: "error.main" }}
+                />
+                <Typography align="center" color="error.main">
+                  Logout
+                </Typography>
               </MenuItem>
             </Menu>
           </Box>
@@ -179,7 +220,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           }}
           sx={{
             display: { xs: "block", md: "none" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: SIDEBAR_WIDTH },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: SIDEBAR_WIDTH,
+            },
           }}
         >
           <Sidebar onCloseMobileDrawer={handleDrawerToggle} />
@@ -190,7 +234,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           variant="permanent"
           sx={{
             display: { xs: "none", md: "block" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: SIDEBAR_WIDTH },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: SIDEBAR_WIDTH,
+            },
           }}
           open
         >
