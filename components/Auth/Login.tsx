@@ -29,6 +29,7 @@ export const Login = () => {
       onSuccess: async (res) => {
         if (res.status === 200) {
           console.log(res.data, process.env.NEXT_PUBLIC_ACCESS_TOKEN);
+          dispatch(setProfileData(res.data.userExist));
           await setCookieValue(
             process.env.NEXT_PUBLIC_ACCESS_TOKEN!,
             res.data.accessToken,
@@ -37,7 +38,6 @@ export const Login = () => {
             process.env.NEXT_PUBLIC_REFRESH_TOKEN!,
             res.data.refreshToken,
           );
-          dispatch(setProfileData(res.data.userExist));
           toast.success(res.message || "Login successfully");
           router.push("/dashboard");
         }
@@ -68,7 +68,7 @@ export const Login = () => {
               fullWidth
               label="Password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Enter your password..."
               {...register("password")}
               slotProps={{
                 inputLabel: { shrink: true },

@@ -2,6 +2,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 import { baseUrlApi } from "../endpoints";
 import { parseCookies } from "nookies";
 import { toast } from "sonner";
+import { deleteCookieValue } from "@/util/common";
 
 const axiosInstance = axios.create({
   baseURL: baseUrlApi,
@@ -23,7 +24,7 @@ export const refreshToken = async () => {
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const cookies = parseCookies();
-  let _token = cookies[process.env.NEXT_PUBLIC_TOKEN_NAME!];
+  let _token = cookies[process.env.NEXT_PUBLIC_ACCESS_TOKEN!];
   const AuthToken = getOAuthAppAccessToken();
 
   if (AuthToken) {
@@ -57,6 +58,14 @@ axiosInstance.interceptors.response.use(
     }
 
     toast.error(message);
+    if (error.response?.status === 401) {
+      deleteCookieValue(process.env.NEXT_PUBLIC_ACCESS_TOKEN!);
+      deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
+
+      window.location.replace("/auth/login");
+
+      return Promise.reject(error);
+    }
 
     return Promise.reject(error);
   },

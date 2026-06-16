@@ -1,8 +1,9 @@
 import { BaseApiResponse } from "@/api/common/interface";
+import { ProfileData } from "@/redux-toolkit/interface/interface";
 
 export interface LoginResponse extends BaseApiResponse {
   data: {
-    userExist: { fullname: string; email: string; isVerified: boolean };
+    userExist: ProfileData;
     accessToken: string;
     refreshToken: string;
   };
@@ -16,7 +17,7 @@ export interface SignUpResponse extends BaseApiResponse {
 }
 
 export interface ProfileDetailsResponse extends BaseApiResponse {
-  data: UserData;
+  data: ProfileData;
 }
 
 export interface UserData {

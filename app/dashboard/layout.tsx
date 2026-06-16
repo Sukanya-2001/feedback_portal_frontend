@@ -39,27 +39,27 @@ export default function DashboardLayout({
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   // Auth redirection check
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/auth/login");
-    }
-  }, [isLoggedIn, router]);
+  // useEffect(() => {
+  //   if (!isLoggedIn) {
+  //     router.push("/auth/login");
+  //   }
+  // }, [isLoggedIn, router]);
 
-  if (!isLoggedIn) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          bgcolor: "#f8fafc",
-        }}
-      >
-        <Typography variant="body1">Redirecting to login...</Typography>
-      </Box>
-    );
-  }
+  // if (!isLoggedIn) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         minHeight: "100vh",
+  //         bgcolor: "#f8fafc",
+  //       }}
+  //     >
+  //       <Typography variant="body1">Redirecting to login...</Typography>
+  //     </Box>
+  //   );
+  // }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

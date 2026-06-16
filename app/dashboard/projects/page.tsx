@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import {
+  Project,
+  Feedback,
+  INITIAL_PROJECTS,
+  INITIAL_FEEDBACKS,
+} from "@/components/MockDatabase";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import ProjectCard from "@/components/ProjectCard";
@@ -50,7 +55,8 @@ export default function MyProjectsPage() {
 
   // Local state for projects and feedbacks
   const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
-  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
+  const [feedbacksList, setFeedbacksList] =
+    useState<Feedback[]>(INITIAL_FEEDBACKS);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
@@ -74,13 +80,15 @@ export default function MyProjectsPage() {
     image: string,
     tags: string[],
     website?: string,
-    contact?: string
+    contact?: string,
   ) => {
     const newProject: Project = {
       id: `proj-${Date.now()}`,
       name,
       description,
-      image: image.trim() || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+      image:
+        image.trim() ||
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
       tags: tags.length > 0 ? tags : ["General"],
       website,
       contact,
@@ -98,7 +106,7 @@ export default function MyProjectsPage() {
     image: string,
     tags: string[],
     website?: string,
-    contact?: string
+    contact?: string,
   ) => {
     setProjectsList((prev) =>
       prev.map((p) =>
@@ -107,13 +115,15 @@ export default function MyProjectsPage() {
               ...p,
               name,
               description,
-              image: image.trim() || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+              image:
+                image.trim() ||
+                "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
               tags: tags.length > 0 ? tags : ["General"],
               website,
               contact,
             }
-          : p
-      )
+          : p,
+      ),
     );
   };
 
@@ -126,7 +136,9 @@ export default function MyProjectsPage() {
 
   // Filter user specific projects (show user-1 projects if Alice Smith, else match by fullname)
   const userProjects = projectsList.filter(
-    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
+    (p) =>
+      p.userId === "user-1" ||
+      p.userName.toLowerCase() === userData.fullname?.toLowerCase(),
   );
 
   // Extract unique tags for filtering
@@ -259,25 +271,6 @@ export default function MyProjectsPage() {
       <Paper variant="outlined" sx={{ p: 2.5, mb: 4, borderRadius: 3 }}>
         <Grid container spacing={3} sx={{ alignItems: "center" }}>
           <Grid size={{ xs: 12, md: 8 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              size="small"
-              placeholder="Search your projects by name or description..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               <Typography
                 variant="body2"
@@ -304,6 +297,25 @@ export default function MyProjectsPage() {
                 />
               ))}
             </Box>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search your projects by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="action" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
           </Grid>
         </Grid>
       </Paper>

@@ -4,6 +4,7 @@ export type UserSliceData = {
 }
 
 export type ProfileData = {
+    _id: string;
     fullname: string;
     email: string;
     isVerified: boolean;

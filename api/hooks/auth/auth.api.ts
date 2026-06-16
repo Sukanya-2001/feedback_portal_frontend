@@ -6,6 +6,7 @@ import {
   ProfileDetailsResponse,
 } from "./auth.interface";
 import { BaseApiResponse } from "@/api/common/interface";
+import { getCookieValue } from "@/util/common";
 
 export const login = async (payload: { email: string; password: string }) => {
   const response = await axiosInstance.post<LoginResponse>(
@@ -74,10 +75,15 @@ export const changePassword = async (payload: {
 };
 
 export const profileDetails = async () => {
-  const response = await axiosInstance.get<ProfileDetailsResponse>(
-    endpoints.auth.profileDetails,
+  const accessToken = await getCookieValue(
+    process.env.NEXT_PUBLIC_ACCESS_TOKEN!,
   );
-  return response.data;
+  if (!!accessToken) {
+    const response = await axiosInstance.get<ProfileDetailsResponse>(
+      endpoints.auth.profileDetails,
+    );
+    return response.data;
+  }
 };
 
 export const profileUpdate = async (payload: {

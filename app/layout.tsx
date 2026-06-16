@@ -8,6 +8,7 @@ import { Box } from "@mui/material";
 import ReduxProvider from "@/components/Wrapper/ReduxWrapper";
 import { Toaster, toast } from "sonner";
 import QueryProvider from "@/components/Wrapper/QueryProvider";
+import { ProfileWrapper } from "@/components/Wrapper/ProfileWrapper";
 
 const geistSans = {
   variable: "--font-geist-sans",
@@ -27,6 +28,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // ProfileWrapper();
+
   return (
     <html
       lang="en"
@@ -41,21 +44,23 @@ export default function RootLayout({
           backgroundColor: "#f8fafc",
         }}
       >
-        <ReduxProvider>
-          <MockDatabaseProvider>
-            <ThemeRegistry>
-              <Navbar />
-              <Box
-                component="main"
-                sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-              >
-                <QueryProvider>{children}</QueryProvider>
-                <Toaster />
-              </Box>
-              <Footer />
-            </ThemeRegistry>
-          </MockDatabaseProvider>
-        </ReduxProvider>
+        <QueryProvider>
+          <ReduxProvider>
+            <MockDatabaseProvider>
+              <ThemeRegistry>
+                <Navbar />
+                <Box
+                  component="main"
+                  sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+                >
+                  {children}
+                  <Toaster />
+                </Box>
+                <Footer />
+              </ThemeRegistry>
+            </MockDatabaseProvider>
+          </ReduxProvider>
+        </QueryProvider>
       </body>
     </html>
   );

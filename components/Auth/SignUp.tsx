@@ -47,7 +47,7 @@ export const SignUp = () => {
           <TextField
             fullWidth
             label="Full Name"
-            placeholder="Alex Mercer"
+            placeholder="Enter your full name..."
             {...register("fullName")}
             slotProps={{
               inputLabel: { shrink: true },
@@ -61,7 +61,7 @@ export const SignUp = () => {
             fullWidth
             label="Email Address"
             type="email"
-            placeholder="developer@domain.com"
+            placeholder="Enter your email address..."
             {...register("email")}
             slotProps={{
               inputLabel: { shrink: true },
@@ -75,7 +75,7 @@ export const SignUp = () => {
             fullWidth
             label="Password"
             type="password"
-            placeholder="Minimum 6 characters"
+            placeholder="Enter your password..."
             {...register("password")}
             slotProps={{
               inputLabel: { shrink: true },
@@ -83,6 +83,22 @@ export const SignUp = () => {
           />
           {!!errors.password && (
             <Errortxt msg={errors.password?.message ?? ""} />
+          )}
+        </div>
+
+        <div>
+          <TextField
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            placeholder="Re-enter your password..."
+            {...register("confirm_password")}
+            slotProps={{
+              inputLabel: { shrink: true },
+            }}
+          />
+          {!!errors.confirm_password && (
+            <Errortxt msg={errors.confirm_password?.message ?? ""} />
           )}
         </div>
 
