@@ -20,6 +20,7 @@ export const ProfileWrapper = async () => {
 
   useEffect(() => {
     if (profileData?.isSuccess && profileData?.data) {
+      
       dispatch(setProfileData(profileData?.data?.data));
     }
   }, [

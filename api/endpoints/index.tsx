@@ -1,4 +1,9 @@
 export const baseUrlApi = `${process.env.NEXT_PUBLIC_BASE_URL}api/`;
+export const imageUrl = `${process.env.NEXT_PUBLIC_IMAGE_URL}`;
+
+export const getImage = (value: string) => {
+  return `${imageUrl}${value}`;
+};
 
 export const endpoints = {
   auth: {
@@ -18,6 +23,7 @@ export const endpoints = {
     create: "projects/create",
     update: "projects",
     delete: "projects",
+    allProjectList: "allProjects",
   },
   categories: {
     list: "categories/get",

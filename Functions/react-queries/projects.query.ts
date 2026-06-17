@@ -4,14 +4,22 @@ import {
   projectCreate,
   projectDelete,
   projectUpdate,
+  allProjectList,
 } from "@/api/hooks/projects/projects.api";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
 
-export const useProjectList = () => {
+export const useProjectList = (page: number, limit: number) => {
   return useQuery({
     queryKey: [allkeys.PROJECT_LIST],
-    queryFn: projectList,
+    queryFn: () => projectList({ page, limit }),
+  });
+};
+
+export const useAllProjectList = (page: number, limit: number) => {
+  return useQuery({
+    queryKey: [allkeys.ALL_PROJECT_LIST],
+    queryFn: () => allProjectList({ page, limit }),
   });
 };
 
@@ -19,6 +27,7 @@ export const useProjectDetails = (projectId: string) => {
   return useQuery({
     queryKey: [allkeys.PROJECT_DETAILS, projectId],
     queryFn: () => projectDetails(projectId),
+    enabled: !!projectId,
   });
 };
 
@@ -38,10 +47,7 @@ export const useProjectUpdate = () => {
       payload,
     }: {
       projectId: string;
-      payload: {
-        name?: string;
-        description?: string;
-      };
+      payload: FormData;
     }) => projectUpdate(projectId, payload),
   });
 };

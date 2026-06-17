@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useMockDatabase } from "@/components/MockDatabase";
 import ProjectCard from "@/components/ProjectCard";
+import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 import {
   Container,
   Typography,
@@ -19,6 +20,9 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import { useAllProjectList } from "@/Functions/react-queries/projects.query";
+import { useCategoryList } from "@/Functions/react-queries/categories.query";
+import { ProjectList } from "@/components/ProjectList";
 
 export default function ProjectsPage() {
   const { projects, feedbacks } = useMockDatabase();
@@ -26,33 +30,9 @@ export default function ProjectsPage() {
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  // Get unique tags across all projects
-  const allTags = Array.from(
-    new Set(projects.flatMap((p) => p.tags))
-  );
+  const { data: categoryList, isPending } = useCategoryList();
 
-  // Filter projects by search query and tag
-  let filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.userName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesTag = selectedTag === "all" || project.tags.includes(selectedTag);
-
-    return matchesSearch && matchesTag;
-  });
-
-  // Sort projects
-  filteredProjects = [...filteredProjects].sort((a, b) => {
-    if (sortBy === "newest") {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-    if (sortBy === "oldest") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    }
-    return 0;
-  });
+  const { data, isLoading } = useAllProjectList(1, 10);
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -64,7 +44,8 @@ export default function ProjectsPage() {
             Explore Projects
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Search, filter, and review applications registered by our developer community.
+            Search, filter, and review applications registered by our developer
+            community.
           </Typography>
         </Box>
       </Box>
@@ -92,7 +73,7 @@ export default function ProjectsPage() {
                   <SearchIcon color="action" />
                 </InputAdornment>
               ),
-            }
+            },
           }}
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -118,12 +99,21 @@ export default function ProjectsPage() {
       </Box>
 
       {/* Filter Tag Chips */}
-      {allTags.length > 0 && (
+      {!!categoryList?.data && categoryList?.data?.length > 0 && (
         <Box sx={{ mb: 5 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 700, mb: 1.5 }}>
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            sx={{ fontWeight: 700, mb: 1.5 }}
+          >
             Filter by Category:
           </Typography>
-          <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{ flexWrap: "wrap" }}
+          >
             <Chip
               label="All Categories"
               clickable
@@ -131,13 +121,13 @@ export default function ProjectsPage() {
               onClick={() => setSelectedTag("all")}
               sx={{ fontWeight: 600 }}
             />
-            {allTags.map((tag) => (
+            {categoryList.data.map((tag) => (
               <Chip
-                key={tag}
-                label={tag}
+                key={tag?._id}
+                label={tag?.name}
                 clickable
-                color={selectedTag === tag ? "primary" : "default"}
-                onClick={() => setSelectedTag(tag)}
+                color={selectedTag === tag?._id ? "primary" : "default"}
+                onClick={() => setSelectedTag(tag?._id)}
                 sx={{ fontWeight: 600 }}
               />
             ))}
@@ -146,7 +136,7 @@ export default function ProjectsPage() {
       )}
 
       {/* Grid List of Projects */}
-      {filteredProjects.length === 0 ? (
+      {data?.projects?.length === 0 ? (
         <Box sx={{ py: 10, textAlign: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
             No projects matched your search
@@ -157,9 +147,10 @@ export default function ProjectsPage() {
         </Box>
       ) : (
         <Grid container spacing={4}>
-          {filteredProjects.map((project) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.id}>
-              <ProjectCard project={project} feedbacks={feedbacks} />
+          {data?.projects?.map((project) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project._id}>
+              {/* Box container wrapping the Card to add management overlay actions */}
+              <ProjectList projects={project} />
             </Grid>
           ))}
         </Grid>

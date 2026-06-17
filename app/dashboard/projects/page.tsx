@@ -39,201 +39,26 @@ import {
   LibraryAdd as LibraryAddIcon,
   OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
-
-const CORE_CATEGORIES = [
-  "Productivity",
-  "SaaS",
-  "Health",
-  "Education",
-  "Collab",
-  "Tech",
-  "Finance",
-];
+import { ProjectList } from "@/components/ProjectList";
+import { useProjectList } from "@/Functions/react-queries/projects.query";
+import { ProjectAddEditModal } from "@/components/ProjectAddEditModal";
+import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
+import { useCategoryList } from "@/Functions/react-queries/categories.query";
 
 export default function MyProjectsPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
+  const [addEditModalOpen, setAddEditModalOpen] = useState(false);
+  const { data: categoryList, isPending } = useCategoryList();
 
-  // Local state for projects and feedbacks
-  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
-  const [feedbacksList, setFeedbacksList] =
-    useState<Feedback[]>(INITIAL_FEEDBACKS);
+  const { data, isLoading } = useProjectList(1, 10);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
 
-  // Dialog state
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-
-  // Form fields
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [website, setWebsite] = useState("");
-  const [contact, setContact] = useState("");
-  const [formError, setFormError] = useState("");
-
-  const createProject = (
-    name: string,
-    description: string,
-    image: string,
-    tags: string[],
-    website?: string,
-    contact?: string,
-  ) => {
-    const newProject: Project = {
-      id: `proj-${Date.now()}`,
-      name,
-      description,
-      image:
-        image.trim() ||
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-      tags: tags.length > 0 ? tags : ["General"],
-      website,
-      contact,
-      userId: "user-1",
-      userName: userData?.fullname || "Anonymous User",
-      createdAt: new Date().toISOString(),
-    };
-    setProjectsList((prev) => [newProject, ...prev]);
-  };
-
-  const updateProject = (
-    projectId: string,
-    name: string,
-    description: string,
-    image: string,
-    tags: string[],
-    website?: string,
-    contact?: string,
-  ) => {
-    setProjectsList((prev) =>
-      prev.map((p) =>
-        p.id === projectId
-          ? {
-              ...p,
-              name,
-              description,
-              image:
-                image.trim() ||
-                "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-              tags: tags.length > 0 ? tags : ["General"],
-              website,
-              contact,
-            }
-          : p,
-      ),
-    );
-  };
-
-  const deleteProject = (projectId: string) => {
-    setProjectsList((prev) => prev.filter((p) => p.id !== projectId));
-    setFeedbacksList((prev) => prev.filter((f) => f.projectId !== projectId));
-  };
-
   if (!isLoggedIn || !userData) return null;
 
-  // Filter user specific projects (show user-1 projects if Alice Smith, else match by fullname)
-  const userProjects = projectsList.filter(
-    (p) =>
-      p.userId === "user-1" ||
-      p.userName.toLowerCase() === userData.fullname?.toLowerCase(),
-  );
-
-  // Extract unique tags for filtering
-  const allUserTags = Array.from(new Set(userProjects.flatMap((p) => p.tags)));
-
-  // Filter projects list
-  let filteredProjects = userProjects.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTag = selectedTag === "all" || p.tags.includes(selectedTag);
-    return matchesSearch && matchesTag;
-  });
-
-  const handleOpenDialog = (project: Project | null = null) => {
-    setFormError("");
-    if (project) {
-      setEditingProject(project);
-      setName(project.name);
-      setDescription(project.description);
-      setImage(project.image);
-      setSelectedCategories(project.tags);
-      setWebsite(project.website || "");
-      setContact(project.contact || "");
-    } else {
-      setEditingProject(null);
-      setName("");
-      setDescription("");
-      setImage("");
-      setSelectedCategories([]);
-      setWebsite("");
-      setContact("");
-    }
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError("");
-
-    if (!name.trim()) {
-      setFormError("Project name is required.");
-      return;
-    }
-
-    if (!description.trim()) {
-      setFormError("Project description is required.");
-      return;
-    }
-
-    const categoriesToSave =
-      selectedCategories.length > 0 ? selectedCategories : ["General"];
-
-    if (editingProject) {
-      updateProject(
-        editingProject.id,
-        name,
-        description,
-        image,
-        categoriesToSave,
-        website,
-        contact,
-      );
-    } else {
-      createProject(
-        name,
-        description,
-        image,
-        categoriesToSave,
-        website,
-        contact,
-      );
-    }
-
-    setDialogOpen(false);
-  };
-
-  const handleDelete = (project: Project) => {
-    if (
-      confirm(
-        `Are you sure you want to delete "${project.name}"? This will permanently erase all feedbacks received.`,
-      )
-    ) {
-      deleteProject(project.id);
-    }
-  };
-
-  const handleShare = (project: Project) => {
-    const url = `${window.location.origin}/projects/${project.id}`;
-    navigator.clipboard.writeText(url);
-    alert("Project feedback link copied to clipboard!");
+  const handleCloseModal = () => {
+    setAddEditModalOpen(false);
   };
 
   return (
@@ -260,7 +85,7 @@ export default function MyProjectsPage() {
           variant="contained"
           color="primary"
           startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog(null)}
+          onClick={() => setAddEditModalOpen(true)}
           sx={{ py: 1.2, px: 2.5, borderRadius: 2 }}
         >
           Add Project
@@ -286,14 +111,14 @@ export default function MyProjectsPage() {
                 color={selectedTag === "all" ? "primary" : "default"}
                 onClick={() => setSelectedTag("all")}
               />
-              {allUserTags.map((tag) => (
+              {!!categoryList?.data && categoryList.data?.length > 0 && categoryList.data.map((tag) => (
                 <Chip
-                  key={tag}
-                  label={tag}
+                  key={tag._id}
+                  label={tag.name}
                   size="small"
                   clickable
-                  onClick={() => setSelectedTag(tag)}
-                  color={selectedTag === tag ? "primary" : "default"}
+                  onClick={() => setSelectedTag(tag._id)}
+                  color={selectedTag === tag._id ? "primary" : "default"}
                 />
               ))}
             </Box>
@@ -321,7 +146,7 @@ export default function MyProjectsPage() {
       </Paper>
 
       {/* Projects Grid List */}
-      {userProjects.length === 0 ? (
+      {data?.projects?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -358,7 +183,7 @@ export default function MyProjectsPage() {
               variant="contained"
               color="primary"
               startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog(null)}
+              onClick={() => setAddEditModalOpen(true)}
               sx={{ px: 3, borderRadius: 2 }}
             >
               Add New Project
@@ -367,203 +192,18 @@ export default function MyProjectsPage() {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          {filteredProjects.map((project) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project.id}>
+          {data?.projects.map((project: ProjectDetails) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project._id}>
               {/* Box container wrapping the Card to add management overlay actions */}
-              <Box
-                sx={{
-                  position: "relative",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {/* Management Toolbar overlays at top left */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 12,
-                    left: 12,
-                    zIndex: 2,
-                    bgcolor: "rgba(255, 255, 255, 0.9)",
-                    backdropFilter: "blur(4px)",
-                    borderRadius: 2,
-                    p: 0.5,
-                    display: "flex",
-                    gap: 0.5,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                    border: "1px solid #e2e8f0",
-                  }}
-                >
-                  <Tooltip title="Edit project">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenDialog(project)}
-                      color="primary"
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete project">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(project)}
-                      color="error"
-                    >
-                      <DeleteOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Copy public review link">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleShare(project)}
-                    >
-                      <ShareIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-                <ProjectCard
-                  project={project}
-                  feedbacks={feedbacksList}
-                  isOwner={false}
-                />
-              </Box>
+              <ProjectList projects={project} myProject/>
             </Grid>
           ))}
         </Grid>
       )}
-
-      {/* CRUD dialog */}
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            fontWeight: 700,
-          }}
-        >
-          <LibraryAddIcon color="primary" />
-          {editingProject ? "Update Project Details" : "Register New Project"}
-        </DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent
-            dividers
-            sx={{ display: "flex", flexDirection: "column", gap: 3, py: 3 }}
-          >
-            <TextField
-              fullWidth
-              label="Project Name"
-              placeholder="e.g. TaskFlow Boards"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              error={formError.includes("name")}
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
-            />
-
-            <TextField
-              fullWidth
-              label="Project Description"
-              placeholder="Write a clear, detailed description of your product..."
-              multiline
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              error={formError.includes("description")}
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
-            />
-
-            <Box>
-              <TextField
-                fullWidth
-                label="Project Banner Image URL"
-                placeholder="e.g. https://images.unsplash.com/... (optional)"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                slotProps={{
-                  inputLabel: { shrink: true },
-                }}
-              />
-              <FormHelperText>
-                Provide a direct URL to an image. Left empty, a custom gradient
-                covers automatically.
-              </FormHelperText>
-            </Box>
-
-            <Box>
-              <Autocomplete
-                multiple
-                id="project-categories"
-                options={CORE_CATEGORIES}
-                value={selectedCategories}
-                onChange={(event, newValue) => {
-                  setSelectedCategories(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label="Project Categories"
-                    placeholder="Choose categories..."
-                    slotProps={{
-                      inputLabel: { shrink: true },
-                    }}
-                  />
-                )}
-              />
-              <FormHelperText>
-                Select standard core categories for your project.
-              </FormHelperText>
-            </Box>
-
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Website Link"
-                  placeholder="https://myproduct.com"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                  }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Contact Email"
-                  placeholder="support@product.com"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
-            <Button onClick={handleCloseDialog} color="inherit">
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              {editingProject ? "Update Project" : "Register Project"}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      <ProjectAddEditModal
+        addEditModal={addEditModalOpen}
+        handleCloseModal={handleCloseModal}
+      />
     </Box>
   );
 }

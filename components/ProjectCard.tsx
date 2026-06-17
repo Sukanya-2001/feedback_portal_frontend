@@ -21,22 +21,29 @@ import {
   Favorite as FavoriteIcon,
   Share as ShareIcon,
 } from "@mui/icons-material";
+import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { getImage } from "@/api/endpoints";
+import { toast } from "sonner";
 
 interface ProjectCardProps {
-  project: Project;
-  feedbacks: Feedback[];
+  project: ProjectDetails;
+  feedbacks?: Feedback[];
   isOwner?: boolean;
 }
 
-export default function ProjectCard({ project, feedbacks, isOwner = false }: ProjectCardProps) {
-  const { deleteProject } = useMockDatabase();
-
-  // Calculate project feedbacks
-  const projectFeedbacks = feedbacks.filter((f) => f.projectId === project.id);
-  const totalFeedbacks = projectFeedbacks.length;
+export default function ProjectCard({
+  project,
+  feedbacks,
+  isOwner = false,
+}: ProjectCardProps) {
+  const { userData } = useSelector((s: RootState) => s.user);
 
   // Premium CSS gradients to fall back to if image fails or is missing
-  const textSeed = project.name.charCodeAt(0) + (project.name.charCodeAt(1) || 0);
+  const textSeed =
+    project.projectName.charCodeAt(0) +
+    (project.projectName.charCodeAt(1) || 0);
   const gradients = [
     "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     "linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)",
@@ -47,18 +54,11 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
   ];
   const selectGradient = gradients[textSeed % gradients.length];
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (confirm(`Are you sure you want to delete "${project.name}"? This will also remove all its feedbacks.`)) {
-      deleteProject(project.id);
-    }
-  };
-
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    const url = `${window.location.origin}/projects/${project.id}`;
+    const url = `${window.location.origin}/projects/${project._id}`;
     navigator.clipboard.writeText(url);
-    alert("Project feedback link copied to clipboard!");
+    toast.success("Project feedback link copied to clipboard!");
   };
 
   return (
@@ -71,12 +71,12 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
       }}
     >
       {/* Project Banner Image or dynamic CSS fallback */}
-      {project.image && project.image.startsWith("http") ? (
+      {project.image ? (
         <CardMedia
           component="img"
           height="160"
-          image={project.image}
-          alt={project.name}
+          image={getImage(project.image)}
+          alt={project.projectName}
           sx={{
             objectFit: "cover",
             backgroundColor: "#f1f5f9",
@@ -95,7 +95,7 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
               fallback.style.color = "white";
               fallback.style.fontWeight = "bold";
               fallback.style.fontSize = "2.5rem";
-              fallback.innerText = project.name.charAt(0).toUpperCase();
+              fallback.innerText = project.projectName.charAt(0).toUpperCase();
               parent.insertBefore(fallback, parent.firstChild);
             }
           }}
@@ -113,16 +113,14 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
             fontSize: "2.5rem",
           }}
         >
-          {project.name.charAt(0).toUpperCase()}
+          {project.projectName.charAt(0).toUpperCase()}
         </Box>
       )}
-
-
 
       <CardContent sx={{ flexGrow: 1, pt: 2, pb: 1 }}>
         {/* Tags */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1.5 }}>
-          {project.tags.map((tag) => (
+          {/* {project.tags.map((tag) => (
             <Chip
               key={tag}
               label={tag}
@@ -135,11 +133,16 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
                 opacity: 0.85,
               }}
             />
-          ))}
+          ))} */}
         </Box>
 
-        <Typography variant="h6" component="h2" gutterBottom sx={{ fontWeight: 700, lineHeight: 1.3 }}>
-          {project.name}
+        <Typography
+          variant="h6"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 700, lineHeight: 1.3 }}
+        >
+          {project.projectName}
         </Typography>
 
         <Typography
@@ -158,42 +161,49 @@ export default function ProjectCard({ project, feedbacks, isOwner = false }: Pro
           {project.description}
         </Typography>
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: 1,
+          }}
+        >
+          {/* <Typography variant="caption" color="text.secondary">
+            By:{" "}
+            <strong>
+              {project.userId._id === userData?._id ? "You" : project?.userName}
+            </strong>
+          </Typography> */}
           <Typography variant="caption" color="text.secondary">
-            By: <strong>{project.userName}</strong>
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {totalFeedbacks} feedback{totalFeedbacks !== 1 && "s"}
+            10 feedbacks
           </Typography>
         </Box>
       </CardContent>
 
-      <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: "space-between" }}>
+      <CardActions
+        sx={{ px: 2, pb: 2, pt: 0, justifyContent: "space-between" }}
+      >
         <Box sx={{ display: "flex", gap: 0.5 }}>
-          <Tooltip title="Copy project feedback link">
+          <Tooltip title="Copy project share link">
             <IconButton size="small" onClick={handleShare}>
               <ShareIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          {isOwner && (
-            <Tooltip title="Delete Project">
-              <IconButton size="small" onClick={handleDelete} color="error">
-                <DeleteOutlineIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
         </Box>
-        <Button
-          component={Link}
-          href={`/projects/${project.id}`}
-          variant="outlined"
-          color="primary"
-          size="small"
-          endIcon={<OpenInNewIcon fontSize="small" />}
-          sx={{ fontWeight: 600, borderRadius: 2 }}
-        >
-          Give Feedback
-        </Button>
+        {project.userId?._id !== userData?._id && (
+          <Button
+            component={Link}
+            href={`/projects/${project._id}`}
+            variant="outlined"
+            color="primary"
+            size="small"
+            endIcon={<OpenInNewIcon fontSize="small" />}
+            sx={{ fontWeight: 600, borderRadius: 2 }}
+          >
+            Give Feedback
+          </Button>
+        )}
       </CardActions>
     </Card>
   );

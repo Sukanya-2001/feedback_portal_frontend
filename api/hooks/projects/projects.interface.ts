@@ -1,7 +1,13 @@
 import { BaseApiResponse } from "@/api/common/interface";
 
 export interface ProjectListResponse extends BaseApiResponse {
-  data: ProjectDetails[];
+  data: {
+    projects: ProjectDetails[];
+    page: number;
+    total: number;
+    limit: number;
+    totalPages: number;  
+  };
 }
 
 export interface ProjectDetailsResponse extends BaseApiResponse {
@@ -10,15 +16,20 @@ export interface ProjectDetailsResponse extends BaseApiResponse {
 
 export interface ProjectDetails {
   _id: string;
-  name: string;
+  projectName: string;
   description: string;
   image: string;
-  category: {
+  categories: {
     _id: string;
     name: string;
   }[];
   createdAt: string;
   updatedAt: string;
-  website_link: string;
-  userId: string;
+  websiteLink: string;
+  userName: string;
+  userId: {
+    _id: string;
+    fullName: string;
+    email: string;
+  }
 }
