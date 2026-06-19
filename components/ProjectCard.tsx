@@ -177,7 +177,8 @@ export default function ProjectCard({
             </Typography>
           )}
           <Typography variant="caption" color="text.secondary">
-            10 feedbacks
+            {project?.feedbackCount}{" "}
+            {project?.feedbackCount > 1 ? "feedbacks" : "feedback"}
           </Typography>
         </Box>
       </CardContent>
@@ -218,7 +219,7 @@ export default function ProjectCard({
           {(!userData || project.userId?._id !== userData?._id) && (
             <Button
               component={Link}
-              href={`/projects/${project._id}`}
+              href={`/projects/${project.slug}`}
               variant="outlined"
               color="primary"
               size="small"

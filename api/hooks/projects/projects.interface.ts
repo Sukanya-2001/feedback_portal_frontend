@@ -16,8 +16,10 @@ export interface ProjectDetailsResponse extends BaseApiResponse {
 
 export interface ProjectDetails {
   _id: string;
+  slug: string;
   projectName: string;
   description: string;
+  feedbackCount: number;
   image: string;
   categories: {
     _id: string;

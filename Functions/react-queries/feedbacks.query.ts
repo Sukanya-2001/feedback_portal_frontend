@@ -4,8 +4,9 @@ import {
   feedbackUpdate,
   feedbackDelete,
   feedbackReply,
+  markAsSave,
 } from "@/api/hooks/feedbacks/feedback.api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
 
 export const useFeedbackCreate = () => {
@@ -57,5 +58,13 @@ export const useReplyonFeedback = () => {
       feedbackId: string;
       payload: { comment: string };
     }) => feedbackReply(feedbackId, payload),
+  });
+};
+
+export const useMarkAsSave = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: [allkeys.FEEDBACK_MARK_AS_SAVE],
+    mutationFn: (feedbackId: string) => markAsSave(feedbackId),
   });
 };

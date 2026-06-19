@@ -13,7 +13,7 @@ export interface FeedbackData {
 
   reply?: {
     comment: string;
-    createdAt: string;
+    created_at: string;
   };
 
   isSaved: boolean;

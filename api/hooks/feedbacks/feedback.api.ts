@@ -62,3 +62,10 @@ export const feedbackReply = async (
   );
   return response.data;
 };
+
+export const markAsSave = async (feedbackId: string) => {
+  const response = await axiosInstance.patch(
+    `${endpoints.feedback.feedbackSave}/${feedbackId}`,
+  );
+  return response.data;
+};

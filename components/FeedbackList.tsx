@@ -126,7 +126,7 @@ export default function FeedbackList({
                         color="text.secondary"
                         sx={{ ml: "auto" }}
                       >
-                        {formatDate(item.reply.createdAt)}
+                        {formatDate(item.reply.created_at)}
                       </Typography>
                     </Box>
                     <Typography

@@ -1,114 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import {
   Typography,
   Box,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
-  Divider,
-  Button,
+  Card,
+  CardContent,
+  CardActionArea,
   Chip,
-  IconButton,
-  TextField,
-  Collapse,
+  Button,
 } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import ForumIcon from "@mui/icons-material/Forum";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import ReplyIcon from "@mui/icons-material/Reply";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import WebIcon from "@mui/icons-material/Web";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
-import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import { useMockDatabase } from "@/components/MockDatabase";
+import { useProjectList } from "@/Functions/react-queries/projects.query";
 
 export default function FeedbacksPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
-
-  // Local state for projects and feedbacks
-  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
-  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
-
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("newest");
-
-  // Reply state
-  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState("");
-  const [replyError, setReplyError] = useState("");
+  const { data: projects, isLoading } = useProjectList(1, 10);
 
   if (!isLoggedIn || !userData) return null;
-
-  // Filter owned projects. If user has no projects matching, show user-1 by default
-  const userProjects = projectsList.filter(
-    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
-  );
-  const userProjectIds = userProjects.map((p) => p.id);
-
-  // Filter feedbacks belonging to owned projects
-  const userFeedbacks = feedbacksList.filter((f) =>
-    userProjectIds.includes(f.projectId)
-  );
-
-  // Filter feedbacks by project dropdown selection
-  const filteredProjectIdFeedbacks = selectedProjectId === "all"
-    ? userFeedbacks
-    : userFeedbacks.filter((f) => f.projectId === selectedProjectId);
-
-  // Sort feedbacks
-  const filteredFeedbacks = [...filteredProjectIdFeedbacks].sort((a, b) => {
-    if (sortBy === "newest") {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    } else {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    }
-  });
-
-  const handleOpenReplyForm = (feedbackId: string) => {
-    setReplyError("");
-    setReplyText("");
-    setActiveReplyId(feedbackId);
-  };
-
-  const handleCloseReplyForm = () => {
-    setActiveReplyId(null);
-  };
-
-  const handleSubmitReply = (feedbackId: string) => {
-    if (!replyText.trim()) {
-      setReplyError("Reply text cannot be empty.");
-      return;
-    }
-    setFeedbacksList((prev) =>
-      prev.map((f) =>
-        f.id === feedbackId
-          ? {
-              ...f,
-              reply: {
-                comment: replyText,
-                createdAt: new Date().toISOString(),
-              },
-            }
-          : f
-      )
-    );
-    setActiveReplyId(null);
-    setReplyText("");
-  };
-
-  const toggleSaveFeedback = (feedbackId: string) => {
-    setFeedbacksList((prev) =>
-      prev.map((f) =>
-        f.id === feedbackId ? { ...f, isSaved: !f.isSaved } : f
-      )
-    );
-  };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -120,62 +37,14 @@ export default function FeedbacksPage() {
             Feedbacks Hub
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manage, filter, and reply to reviews left on all your active
-            products.
+            Select a project below to manage reviews, filter feedback, and send
+            replies.
           </Typography>
         </Box>
       </Box>
 
-      {/* Filters Toolbar */}
-      <Paper variant="outlined" sx={{ p: 3, mb: 4, borderRadius: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2.5 }}>
-          <FilterListIcon fontSize="small" color="action" />
-          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-            Filter & Sort Feedbacks
-          </Typography>
-        </Box>
-
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="project-filter-label">Project</InputLabel>
-              <Select
-                labelId="project-filter-label"
-                id="project-filter"
-                value={selectedProjectId}
-                label="Project"
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-              >
-                <MenuItem value="all">All Projects</MenuItem>
-                {userProjects.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    {p.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="sort-filter-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-filter-label"
-                id="sort-filter"
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="newest">Newest First</MenuItem>
-                <MenuItem value="oldest">Oldest First</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      {/* Feedbacks Listing */}
-      {filteredFeedbacks.length === 0 ? (
+      {/* Projects Grid */}
+      {projects?.projects?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -189,142 +58,175 @@ export default function FeedbacksPage() {
             borderColor: "divider",
           }}
         >
+          <WebIcon sx={{ fontSize: 48, color: "text.disabled", mb: 2 }} />
           <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
-            No feedbacks found
+            No projects registered
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Try resetting your filters or share your project link to solicit customer feedback.
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            You need to register a project first before you can manage its
+            feedbacks.
           </Typography>
+          <Button
+            component={Link}
+            href="/dashboard/projects"
+            variant="contained"
+            color="primary"
+            sx={{ borderRadius: 2 }}
+          >
+            Create Your First Project
+          </Button>
         </Paper>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          {filteredFeedbacks.map((f) => {
-            const hasReply = !!f.reply;
+        <Grid container spacing={3}>
+          {projects?.projects?.map((p) => {
+            // Premium CSS gradient logic for card highlight top border
+            const textSeed =
+              p?.projectName?.charCodeAt(0) +
+              (p?.projectName?.charCodeAt(1) || 0);
+            const gradients = [
+              "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
+              "linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%)",
+              "linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%)",
+              "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+              "linear-gradient(90deg, #13547a 0%, #80d0c7 100%)",
+              "linear-gradient(90deg, #ff0844 0%, #ffb199 100%)",
+            ];
+            const cardGradient = gradients[textSeed % gradients.length];
 
             return (
-              <Paper key={f.id} variant="outlined" sx={{ p: 3, borderRadius: 3, position: "relative" }}>
-                
-                <Box sx={{ position: "absolute", top: 18, right: 18 }}>
-                  <IconButton onClick={() => toggleSaveFeedback(f.id)} color={f.isSaved ? "warning" : "default"}>
-                    {f.isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-                  </IconButton>
-                </Box>
-
-                <Box
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={p._id}>
+                <Card
                   sx={{
+                    height: "100%",
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    position: "relative",
+                    overflow: "hidden",
                     display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: "space-between",
-                    alignItems: { xs: "flex-start", sm: "center" },
-                    gap: 1.5,
-                    mb: 1.5,
-                    pr: 5,
+                    flexDirection: "column",
+                    transition: "all 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 12px 30px rgba(0, 0, 0, 0.08)",
+                      borderColor: "primary.main",
+                    },
                   }}
+                  
                 >
-                  <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1.5 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }} color="text.primary">
-                      {f.userName}
-                    </Typography>
-                    {f.guestEmail && (
-                      <Typography variant="caption" color="text.secondary">
-                        ({f.guestEmail})
-                      </Typography>
-                    )}
-                    <Chip
-                      label={f.projectName}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                      sx={{ fontWeight: 600, fontSize: "0.75rem" }}
-                    />
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {new Date(f.createdAt).toLocaleString()}
-                  </Typography>
-                </Box>
+                  {/* Decorative Top Gradient bar */}
+                  <Box sx={{ height: 4, background: cardGradient }} />
 
-                <Typography variant="body1" color="text.primary" sx={{ mb: 2, whiteSpace: "pre-line" }}>
-                  {f.comment}
-                </Typography>
-
-                {hasReply && (
-                  <Box sx={{ mt: 3, pl: 3, borderLeft: "3px solid #0d9488" }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                      <RateReviewIcon color="secondary" fontSize="small" />
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }} color="secondary.dark">
-                        Developer Response
+                  <CardActionArea
+                    component={Link}
+                    href={`/dashboard/feedbacks/${p.slug}`}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "stretch",
+                      height: "100%",
+                      justifyContent: "flex-start",
+                      p: 2.5,
+                    }}
+                  >
+                    <CardContent sx={{ p: 0, flexGrow: 1 }}>
+                      {/* Name & Tags */}
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 700, mb: 1, color: "text.primary" }}
+                      >
+                        {p?.projectName}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ ml: "auto" }}>
-                        {new Date(f.reply!.createdAt).toLocaleString()}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
-                      {f.reply!.comment}
-                    </Typography>
-                  </Box>
-                )}
 
-                <Box sx={{ mt: 2, display: "flex", flexFlow: "column", gap: 2 }}>
-                  {!hasReply && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      {f.guestEmail ? (
-                        activeReplyId !== f.id && (
-                          <Button
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 0.5,
+                          mb: 2,
+                        }}
+                      >
+                        {p?.categories?.map((tag) => (
+                          <Chip
+                            key={tag?._id}
+                            label={tag?.name}
                             size="small"
                             variant="outlined"
-                            startIcon={<ReplyIcon />}
-                            onClick={() => handleOpenReplyForm(f.id)}
-                            sx={{ borderRadius: 2 }}
-                          >
-                            Reply to Guest
-                          </Button>
-                        )
-                      ) : (
-                        <Typography variant="caption" color="text.disabled">
-                          Cannot reply (guest did not provide email address)
-                        </Typography>
-                      )}
-                    </Box>
-                  )}
-
-                  <Collapse in={activeReplyId === f.id}>
-                    <Paper variant="outlined" sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 2 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                        Replying by email to {f.guestEmail}:
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        multiline
-                        rows={2}
-                        placeholder="Write your official response..."
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        error={!!replyError}
-                        helperText={replyError}
-                        sx={{ mb: 2 }}
-                      />
-                      <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                        <Button size="small" variant="text" onClick={handleCloseReplyForm}>
-                          Cancel
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="primary"
-                          endIcon={<ArrowCircleUpIcon />}
-                          onClick={() => handleSubmitReply(f.id)}
-                        >
-                          Send Response
-                        </Button>
+                            sx={{
+                              fontSize: "0.68rem",
+                              fontWeight: 600,
+                              height: 20,
+                            }}
+                          />
+                        ))}
                       </Box>
-                    </Paper>
-                  </Collapse>
-                </Box>
-              </Paper>
+
+                      {/* Description */}
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          lineHeight: 1.5,
+                          height: 63, // Ensures aligned text
+                          mb: 2.5,
+                        }}
+                      >
+                        {p.description}
+                      </Typography>
+                    </CardContent>
+
+                    {/* Bottom Status bar */}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mt: "auto",
+                        pt: 1.5,
+                        borderTop: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    >
+                      <Chip
+                        label={
+                          p?.feedbackCount === 1
+                            ? "1 feedback"
+                            : `${p?.feedbackCount} feedbacks`
+                        }
+                        color={
+                          p?.feedbackCount > 0 ? "primary" : "default"
+                        }
+                        variant={
+                          p?.feedbackCount > 0 ? "filled" : "outlined"
+                        }
+                        size="small"
+                        sx={{ fontWeight: 700, px: 0.5 }}
+                      />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          color: "primary.main",
+                          fontWeight: 600,
+                          fontSize: "0.85rem",
+                          gap: 0.5,
+                        }}
+                      >
+                        Manage
+                        <ArrowForwardIcon sx={{ fontSize: 16 }} />
+                      </Box>
+                    </Box>
+                  </CardActionArea>
+                </Card>
+              </Grid>
             );
           })}
-        </Box>
+        </Grid>
       )}
     </Box>
   );
