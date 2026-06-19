@@ -26,7 +26,7 @@ export const ProjectList = ({
   myProject,
 }: {
   projects: ProjectDetails;
-  myProject?: Boolean;
+  myProject?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const [addEditModalOpen, setAddEditModalOpen] = useState(false);
@@ -114,6 +114,7 @@ export const ProjectList = ({
       <ProjectCard
         project={projects}
         // feedbacks={feedbacksList}
+        myProject={myProject || false}
         isOwner={false}
       />
       <ProjectAddEditModal

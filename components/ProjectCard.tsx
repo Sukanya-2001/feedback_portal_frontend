@@ -31,12 +31,14 @@ interface ProjectCardProps {
   project: ProjectDetails;
   feedbacks?: Feedback[];
   isOwner?: boolean;
+  myProject?: boolean;
 }
 
 export default function ProjectCard({
   project,
   feedbacks,
   isOwner = false,
+  myProject,
 }: ProjectCardProps) {
   const { userData } = useSelector((s: RootState) => s.user);
 
@@ -120,20 +122,20 @@ export default function ProjectCard({
       <CardContent sx={{ flexGrow: 1, pt: 2, pb: 1 }}>
         {/* Tags */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1.5 }}>
-          {/* {project.tags.map((tag) => (
+          {project.categories.map((tag) => (
             <Chip
-              key={tag}
-              label={tag}
+              key={tag?._id}
+              label={tag?.name}
               size="small"
+              color="primary"
+              variant="outlined"
               sx={{
                 fontSize: "0.72rem",
                 fontWeight: 600,
-                bgcolor: "primary.light",
-                color: "primary.dark",
                 opacity: 0.85,
               }}
             />
-          ))} */}
+          ))}
         </Box>
 
         <Typography
@@ -169,12 +171,11 @@ export default function ProjectCard({
             mt: 1,
           }}
         >
-          {/* <Typography variant="caption" color="text.secondary">
-            By:{" "}
-            <strong>
-              {project.userId._id === userData?._id ? "You" : project?.userName}
-            </strong>
-          </Typography> */}
+          {!myProject && (
+            <Typography variant="caption" color="text.secondary">
+              By: <strong>{project?.userName}</strong>
+            </Typography>
+          )}
           <Typography variant="caption" color="text.secondary">
             10 feedbacks
           </Typography>
@@ -184,14 +185,28 @@ export default function ProjectCard({
       <CardActions
         sx={{ px: 2, pb: 2, pt: 0, justifyContent: "space-between" }}
       >
-        <Box sx={{ display: "flex", gap: 0.5 }}>
-          <Tooltip title="Copy project share link">
-            <IconButton size="small" onClick={handleShare}>
-              <ShareIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-        {project.userId?._id !== userData?._id && (
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          onClick={handleShare}
+          endIcon={<ShareIcon fontSize="small" />}
+          sx={{ fontWeight: 600, borderRadius: 2 }}
+        >
+          Copy Feedback Link
+        </Button>
+        <Button
+          component={Link}
+          href={`/projects/${project._id}`}
+          variant="outlined"
+          color="primary"
+          size="small"
+          endIcon={<OpenInNewIcon fontSize="small" />}
+          sx={{ fontWeight: 600, borderRadius: 2 }}
+        >
+          View Website
+        </Button>
+        {(!userData || project.userId?._id !== userData?._id) && (
           <Button
             component={Link}
             href={`/projects/${project._id}`}

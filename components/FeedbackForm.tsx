@@ -16,51 +16,66 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux-toolkit/store/store";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  feedbackSchema,
+  FeedbackType,
+  feedbackType,
+} from "@/Functions/schema/feedback.schema";
+import { useFeedbackCreate } from "@/Functions/react-queries/feedbacks.query";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { allkeys } from "@/Functions/react-queries/allKeys";
 
 interface FeedbackFormProps {
   projectId: string;
 }
 
 export default function FeedbackForm({ projectId }: FeedbackFormProps) {
-  const { addFeedback } = useMockDatabase();
-  const [userName, setUserName] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [comment, setComment] = useState("");
-  const [error, setError] = useState("");
-  const [successOpen, setSuccessOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(feedbackSchema),
+    defaultValues: {
+      guestName: "",
+      guestEmail: "",
+      feedback: "",
+    },
+  });
+  const { mutateAsync, isPending } = useFeedbackCreate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!comment.trim()) {
-      setError("Please write some feedback before submitting.");
-      return;
-    }
-
-    // Validate email if entered
-    if (guestEmail.trim() && !guestEmail.includes("@")) {
-      setError("Please enter a valid email address if you wish to receive a reply.");
-      return;
-    }
-
-    addFeedback(
-      projectId,
-      userName || "Anonymous Guest",
-      guestEmail.trim() || undefined,
-      5, // Default rating under the hood
-      comment
-    );
-
-    // Reset form states
-    setUserName("");
-    setGuestEmail("");
-    setComment("");
-    setSuccessOpen(true);
+  const onSubmit = (data: FeedbackType) => {
+    const payload = {
+      projectId: projectId,
+      guestName: data.guestName || "Anonymous Guest",
+      guestEmail: data.guestEmail || undefined,
+      feedback: data.feedback,
+    };
+    mutateAsync(payload, {
+      onSuccess: (res) => {
+        if (res.status === 201) {
+          reset();
+          toast.success(
+            "Feedback submitted successfully! Thank you for your review.",
+          );
+          queryClient.refetchQueries({ queryKey: [allkeys.FEEDBACK_LIST] });
+        }
+      },
+    });
   };
 
   return (
-    <Card variant="outlined" sx={{ mb: 4, border: "1px solid", borderColor: "divider" }}>
+    <Card
+      variant="outlined"
+      sx={{ mb: 4, border: "1px solid", borderColor: "divider" }}
+    >
       <CardContent sx={{ p: { xs: 2, md: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
           <RateReviewIcon color="primary" />
@@ -69,61 +84,63 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps) {
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Share your experience with this project. Your thoughts and suggestions help the creators improve their work!
+          Share your experience with this project. Your thoughts and suggestions
+          help the creators improve their work!
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
+                  {...register("guestName")}
                   fullWidth
                   label="Your Name (Optional)"
                   variant="outlined"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Anonymous Guest"
+                  placeholder="Enter your Name..."
+                  error={!!errors.guestName}
+                  helperText={errors.guestName?.message}
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
+                  {...register("guestEmail")}
                   fullWidth
                   label="Your Email (Optional)"
                   type="email"
                   variant="outlined"
-                  value={guestEmail}
-                  onChange={(e) => setGuestEmail(e.target.value)}
-                  placeholder="yourname@domain.com"
+                  placeholder="Enter your email..."
+                  error={!!errors.guestEmail}
+                  helperText={errors.guestEmail?.message}
                   slotProps={{
-                    inputLabel: { shrink: true }
+                    inputLabel: { shrink: true },
                   }}
                 />
               </Grid>
             </Grid>
             <FormHelperText sx={{ mt: -1.5 }}>
-              Providing your email allows the project owner to reply directly to your feedback.
+              Providing your email allows the project owner to reply directly to
+              your feedback.
             </FormHelperText>
 
             <Box>
               <TextField
+                {...register("feedback")}
                 fullWidth
                 label="Feedback Comment"
                 variant="outlined"
                 multiline
                 rows={4}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
                 placeholder="Write your review, suggestions, or bugs here..."
-                error={!!error && error.includes("feedback")}
-                required
+                error={!!errors.feedback}
+                helperText={errors.feedback?.message}
                 slotProps={{
-                  inputLabel: { shrink: true }
+                  inputLabel: { shrink: true },
                 }}
               />
-              {error && <FormHelperText error>{error}</FormHelperText>}
             </Box>
 
             <Button
@@ -138,17 +155,6 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps) {
             </Button>
           </Box>
         </form>
-
-        <Snackbar
-          open={successOpen}
-          autoHideDuration={4000}
-          onClose={() => setSuccessOpen(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert onClose={() => setSuccessOpen(false)} severity="success" variant="filled" sx={{ width: "100%" }}>
-            Feedback submitted successfully! Thank you for your review.
-          </Alert>
-        </Snackbar>
       </CardContent>
     </Card>
   );

@@ -1,4 +1,10 @@
-import { feedbackCreate, feedbackList, feedbackUpdate, feedbackDelete, feedbackReply } from "@/api/hooks/feedbacks/feedback.api";
+import {
+  feedbackCreate,
+  feedbackList,
+  feedbackUpdate,
+  feedbackDelete,
+  feedbackReply,
+} from "@/api/hooks/feedbacks/feedback.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
 
@@ -9,10 +15,15 @@ export const useFeedbackCreate = () => {
   });
 };
 
-export const useFeedbackList = (projectId: string) => {
+export const useFeedbackList = (
+  page: number,
+  limit: number,
+  projectId: string,
+) => {
   return useQuery({
-    queryKey: [allkeys.FEEDBACK_LIST, projectId],
-    queryFn: () => feedbackList(projectId),
+    queryKey: [allkeys.FEEDBACK_LIST, projectId, page, limit],
+    queryFn: () => feedbackList({ page, limit, projectId }),
+    enabled: !!projectId,
   });
 };
 

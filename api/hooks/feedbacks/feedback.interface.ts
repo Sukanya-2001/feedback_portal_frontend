@@ -8,7 +8,7 @@ export interface FeedbackData {
   _id: string;
   projectId: string;
   feedback: string;
-  userName?: string;
+  guestName?: string;
   guestEmail?: string;
 
   reply?: {
@@ -23,5 +23,11 @@ export interface FeedbackData {
 }
 
 export type FeedbackListResponse = BaseApiResponse & {
-  data: FeedbackData[];
+  data: {
+    feedbacks: FeedbackData[];
+    page: number;
+    total: number;
+    limit: number;
+    totalPages: number;
+  };
 };

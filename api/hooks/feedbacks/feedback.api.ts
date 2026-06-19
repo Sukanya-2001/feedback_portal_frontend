@@ -19,11 +19,19 @@ export const feedbackCreate = async (payload: {
   return response.data;
 };
 
-export const feedbackList = async (projectId: string) => {
+export const feedbackList = async ({
+  page,
+  limit,
+  projectId,
+}: {
+  page: number;
+  limit: number;
+  projectId: string;
+}) => {
   const response = await axiosInstance.get<FeedbackListResponse>(
-    `${endpoints.feedback.list}/${projectId}`,
+    `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}`,
   );
-  return response.data;
+  return response.data.data;
 };
 
 export const feedbackUpdate = async (
