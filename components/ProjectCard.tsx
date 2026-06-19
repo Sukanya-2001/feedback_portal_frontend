@@ -183,42 +183,74 @@ export default function ProjectCard({
       </CardContent>
 
       <CardActions
-        sx={{ px: 2, pb: 2, pt: 0, justifyContent: "space-between" }}
+        sx={{
+          px: 2,
+          pb: 2,
+          pt: 0,
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 1.5,
+        }}
       >
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          onClick={handleShare}
-          endIcon={<ShareIcon fontSize="small" />}
-          sx={{ fontWeight: 600, borderRadius: 2 }}
+        {/* First row */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1.5,
+            width: "100%",
+          }}
         >
-          Copy Feedback Link
-        </Button>
-        <Button
-          component={Link}
-          href={`/projects/${project._id}`}
-          variant="outlined"
-          color="primary"
-          size="small"
-          endIcon={<OpenInNewIcon fontSize="small" />}
-          sx={{ fontWeight: 600, borderRadius: 2 }}
-        >
-          View Website
-        </Button>
-        {(!userData || project.userId?._id !== userData?._id) && (
           <Button
-            component={Link}
-            href={`/projects/${project._id}`}
             variant="outlined"
             color="primary"
             size="small"
-            endIcon={<OpenInNewIcon fontSize="small" />}
-            sx={{ fontWeight: 600, borderRadius: 2 }}
+            onClick={handleShare}
+            endIcon={<ShareIcon fontSize="small" />}
+            sx={{
+              fontWeight: 600,
+              borderRadius: 2,
+              flex: 1,
+            }}
           >
-            Give Feedback
+            Copy Link
           </Button>
-        )}
+
+          {(!userData || project.userId?._id !== userData?._id) && (
+            <Button
+              component={Link}
+              href={`/projects/${project._id}`}
+              variant="outlined"
+              color="primary"
+              size="small"
+              endIcon={<OpenInNewIcon fontSize="small" />}
+              sx={{
+                fontWeight: 600,
+                borderRadius: 2,
+              }}
+            >
+              Give Feedback
+            </Button>
+          )}
+        </Box>
+
+        {/* Second row */}
+        <Button
+          component="a"
+          href={project.websiteLink || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="contained"
+          color="primary"
+          size="small"
+          endIcon={<OpenInNewIcon fontSize="small" />}
+          sx={{
+            fontWeight: 600,
+            borderRadius: 2,
+            flex: 1,
+          }}
+        >
+          View Website
+        </Button>
       </CardActions>
     </Card>
   );

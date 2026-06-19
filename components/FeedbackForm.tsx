@@ -36,6 +36,7 @@ interface FeedbackFormProps {
 
 export default function FeedbackForm({ projectId }: FeedbackFormProps) {
   const queryClient = useQueryClient();
+  const { userData } = useSelector((s: RootState) => s?.user);
   const {
     register,
     handleSubmit,
@@ -44,8 +45,8 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps) {
   } = useForm({
     resolver: yupResolver(feedbackSchema),
     defaultValues: {
-      guestName: "",
-      guestEmail: "",
+      guestName: userData?.fullname || "",
+      guestEmail: userData?.email || "",
       feedback: "",
     },
   });
