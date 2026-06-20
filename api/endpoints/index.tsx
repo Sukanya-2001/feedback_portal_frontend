@@ -35,5 +35,6 @@ export const endpoints = {
     delete: "feedbacks",
     reply: "feedbacks/reply/update",
     feedbackSave: "feedbacks/save",
+    allSavedFeedback: "savedFeedbacks"
   },
 };

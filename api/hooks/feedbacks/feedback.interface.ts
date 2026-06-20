@@ -31,3 +31,28 @@ export type FeedbackListResponse = BaseApiResponse & {
     totalPages: number;
   };
 };
+
+export interface SavedFeedbackResponse extends BaseApiResponse {
+  data: SavedFeedbackData[];
+}
+
+export interface SavedFeedbackData {
+  _id: string;
+  project: {
+    _id: string;
+    projectName: string;
+    slug: string;
+  };
+  feedbackCount: number;
+  feedbacks: {
+    _id: string;
+    guestName: string;
+    guestEmail: string;
+    feedback: string;
+    createdAt: string;
+    reply: {
+      _id: string;
+      comment: string;
+    };
+  }[];
+}

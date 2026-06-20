@@ -2,9 +2,18 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import {
+  Project,
+  Feedback,
+  INITIAL_PROJECTS,
+  INITIAL_FEEDBACKS,
+} from "@/components/MockDatabase";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
 import {
   Typography,
   Box,
@@ -20,41 +29,27 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import WebIcon from "@mui/icons-material/Web";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import {
+  useAllSavedFeedbacks,
+  useMarkAsSave,
+} from "@/Functions/react-queries/feedbacks.query";
+import { toast } from "sonner";
+import { SavedFeedbackSkeleton } from "@/components/Skeleton/SaveFeedbackSkeleton";
 
 export default function SavedFeedbacksPage() {
-  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
-
-  // Local state for projects and feedbacks
-  const [projectsList, setProjectsList] = useState<Project[]>(INITIAL_PROJECTS);
-  const [feedbacksList, setFeedbacksList] = useState<Feedback[]>(INITIAL_FEEDBACKS);
-
-  if (!isLoggedIn || !userData) return null;
-
-  // Filter owned projects. If user has no projects matching, show user-1 by default
-  const userProjects = projectsList.filter(
-    (p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase()
-  );
-  const userProjectIds = userProjects.map((p) => p.id);
-
-  // Get saved feedbacks belonging to owned projects
-  const savedFeedbacks = feedbacksList.filter(
-    (f) => userProjectIds.includes(f.projectId) && f.isSaved
-  );
+  const { data: savedFeedbacks, isLoading, refetch } = useAllSavedFeedbacks();
+  const { mutateAsync, isPending } = useMarkAsSave();
 
   const toggleSaveFeedback = (feedbackId: string) => {
-    setFeedbacksList((prev) =>
-      prev.map((f) => (f.id === feedbackId ? { ...f, isSaved: !f.isSaved } : f))
-    );
+    mutateAsync(feedbackId, {
+      onSuccess: (res) => {
+        if (res.status === 200) {
+          toast.success("Feedback saved successfully");
+          refetch();
+        }
+      },
+    });
   };
-
-  // Group feedbacks by project
-  const feedbacksByProject: { [projectId: string]: Feedback[] } = {};
-  savedFeedbacks.forEach((f) => {
-    if (!feedbacksByProject[f.projectId]) {
-      feedbacksByProject[f.projectId] = [];
-    }
-    feedbacksByProject[f.projectId].push(f);
-  });
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -66,12 +61,15 @@ export default function SavedFeedbacksPage() {
             Saved Feedbacks
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Keep track of reviews, feature suggestions, or bugs you bookmarked for later.
+            Keep track of reviews, feature suggestions, or bugs you bookmarked
+            for later.
           </Typography>
         </Box>
       </Box>
 
-      {savedFeedbacks.length === 0 ? (
+      {isLoading ? (
+        <SavedFeedbackSkeleton />
+      ) : !!savedFeedbacks && savedFeedbacks.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -85,82 +83,212 @@ export default function SavedFeedbacksPage() {
             borderColor: "divider",
           }}
         >
-          <BookmarkBorderIcon sx={{ fontSize: 48, color: "text.disabled", mb: 2 }} />
+          <BookmarkBorderIcon
+            sx={{ fontSize: 48, color: "text.disabled", mb: 2 }}
+          />
           <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
             No saved feedbacks
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            You can bookmark specific reviews on your feedbacks feed to keep them tracked here.
+            You can bookmark specific reviews on your feedbacks feed to keep
+            them tracked here.
           </Typography>
         </Paper>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {userProjects
-            .filter((p) => feedbacksByProject[p.id] && feedbacksByProject[p.id].length > 0)
-            .map((project) => {
-              const projectSavedList = feedbacksByProject[project.id];
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {savedFeedbacks?.map((feedback, index) => {
+            const previewFeedbacks = feedback.feedbacks.slice(0, 5);
 
-              return (
-                <Paper key={project.id} variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
-                  {/* Project Header */}
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
-                    <WebIcon color="primary" />
-                    <Typography variant="h6" sx={{ fontWeight: 800 }}>
-                      {project.name}
-                    </Typography>
-                    <Chip
-                      label={`${projectSavedList.length} bookmarked`}
-                      size="small"
-                      color="secondary"
-                      sx={{ fontWeight: 600, fontSize: "0.75rem", ml: 1 }}
-                    />
+            return (
+              <Accordion
+                key={feedback._id}
+                defaultExpanded={index === 0}
+                disableGutters
+                sx={{
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  "&:before": {
+                    display: "none",
+                  },
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{
+                    px: 3,
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      gap: 2,
+                      width: "100%",
+                      pr: 2,
+                    }}
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1.5,
+                        }}
+                      >
+                        <WebIcon color="primary" />
+
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 800,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {feedback.project.projectName}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mt: 0.5,
+                          ml: { xs: 0, sm: 4.5 }, // aligns below project name
+                        }}
+                      >
+                        {feedback.feedbackCount} bookmarked feedback
+                        {feedback.feedbackCount > 1 ? "s" : ""}
+                      </Typography>
+                    </Box>
+
+                    {feedback.feedbackCount > 5 && (
+                      <Button
+                        component={Link}
+                        href={`saved-feedbacks/${feedback.project.slug}`}
+                        variant="outlined"
+                        size="small"
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{
+                          flexShrink: 0,
+                        }}
+                      >
+                        View All
+                      </Button>
+                    )}
                   </Box>
+                </AccordionSummary>
 
-                  <Divider sx={{ mb: 2.5 }} />
-
-                  {/* List of saved feedbacks under this project */}
+                <AccordionDetails sx={{ px: 3 }}>
                   <Grid container spacing={2}>
-                    {projectSavedList.map((f) => (
-                      <Grid size={12} key={f.id}>
+                    {previewFeedbacks.map((f) => (
+                      <Grid size={12} key={f._id}>
                         <Paper
                           variant="outlined"
-                          sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 2, position: "relative" }}
+                          sx={{
+                            p: 2,
+                            bgcolor: "#f8fafc",
+                            borderRadius: 2,
+                            position: "relative",
+                          }}
                         >
-                          <Box sx={{ position: "absolute", top: 12, right: 12 }}>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: 12,
+                              right: 12,
+                            }}
+                          >
                             <Tooltip title="Remove bookmark">
-                              <IconButton onClick={() => toggleSaveFeedback(f.id)} color="warning" size="small">
+                              <IconButton
+                                onClick={() => toggleSaveFeedback(f._id)}
+                                disabled={isPending}
+                                color="warning"
+                                size="small"
+                              >
                                 <BookmarkIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           </Box>
 
-                          <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1, mb: 1, pr: 4 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                              {f.userName}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              alignItems: "center",
+                              gap: 1,
+                              mb: 1,
+                              pr: 4,
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: 700 }}
+                            >
+                              {f.guestName}
                             </Typography>
+
                             {f.guestEmail && (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 ({f.guestEmail})
                               </Typography>
                             )}
                           </Box>
 
-
-
-                          <Typography variant="body2" color="text.primary" sx={{ mb: 1.5, whiteSpace: "pre-line" }}>
-                            {f.comment}
+                          <Typography
+                            variant="body2"
+                            color="text.primary"
+                            sx={{
+                              mb: 1.5,
+                              whiteSpace: "pre-line",
+                            }}
+                          >
+                            {f.feedback}
                           </Typography>
 
-                          {/* Show developer response if any */}
                           {f.reply && (
-                            <Box sx={{ mt: 1.5, pl: 2, borderLeft: "2px solid #0d9488" }}>
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.5 }}>
-                                <RateReviewIcon color="secondary" sx={{ fontSize: 14 }} />
-                                <Typography variant="caption" sx={{ fontWeight: 700 }} color="secondary.dark">
+                            <Box
+                              sx={{
+                                mt: 1.5,
+                                pl: 2,
+                                borderLeft: "2px solid #0d9488",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 0.5,
+                                  mb: 0.5,
+                                }}
+                              >
+                                <RateReviewIcon
+                                  color="secondary"
+                                  sx={{ fontSize: 14 }}
+                                />
+
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontWeight: 700 }}
+                                  color="secondary.dark"
+                                >
                                   Your reply:
                                 </Typography>
                               </Box>
-                              <Typography variant="caption" color="text.primary" sx={{ display: "block" }}>
+
+                              <Typography
+                                variant="caption"
+                                color="text.primary"
+                                sx={{ display: "block" }}
+                              >
                                 {f.reply.comment}
                               </Typography>
                             </Box>
@@ -169,9 +297,10 @@ export default function SavedFeedbacksPage() {
                       </Grid>
                     ))}
                   </Grid>
-                </Paper>
-              );
-            })}
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </Box>
       )}
     </Box>

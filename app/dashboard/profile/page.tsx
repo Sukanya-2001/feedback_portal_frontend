@@ -21,7 +21,7 @@ export default function ProfilePage() {
   const dispatch = useDispatch();
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
 
-  const [name, setName] = useState(userData?.fullname || "");
+  const [name, setName] = useState(userData?.fullName || "");
   const [email, setEmail] = useState(userData?.email || "");
 
   // Password states
@@ -52,9 +52,9 @@ export default function ProfilePage() {
     dispatch(
       setProfileData({
         ...userData,
-        fullname: name,
+        fullName: name,
         email: email,
-      })
+      }),
     );
     setSuccessMessage("Profile updated successfully!");
     setSuccessOpen(true);

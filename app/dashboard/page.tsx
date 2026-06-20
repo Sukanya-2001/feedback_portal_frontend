@@ -35,7 +35,7 @@ export default function DashboardPage() {
   if (!isLoggedIn || !userData) return null;
 
   // Filter owned items. If user has no projects matching, we show user-1 projects by default so the dashboard displays mock statistics.
-  const userProjects = projects.filter((p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullname?.toLowerCase());
+  const userProjects = projects.filter((p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullName?.toLowerCase());
   const userProjectIds = userProjects.map((p) => p.id);
   const userFeedbacks = feedbacks.filter((f) =>
     userProjectIds.includes(f.projectId),
@@ -66,7 +66,7 @@ export default function DashboardPage() {
       {/* Welcome Card */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 800 }} gutterBottom>
-          Hello, {userData.fullname}!
+          Hello, {userData.fullName}!
         </Typography>
 
         <Typography variant="body2" color="text.secondary">

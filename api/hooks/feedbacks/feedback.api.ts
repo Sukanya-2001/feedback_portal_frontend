@@ -4,6 +4,7 @@ import { endpoints } from "@/api/endpoints";
 import {
   FeedbackDetailsResponse,
   FeedbackListResponse,
+  SavedFeedbackResponse,
 } from "./feedback.interface";
 
 export const feedbackCreate = async (payload: {
@@ -23,14 +24,23 @@ export const feedbackList = async ({
   page,
   limit,
   projectId,
+  saved,
 }: {
   page: number;
   limit: number;
   projectId: string;
+  saved?: boolean;
 }) => {
-  const response = await axiosInstance.get<FeedbackListResponse>(
-    `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}`,
-  );
+  let response;
+  if (saved) {
+    response = await axiosInstance.get<FeedbackListResponse>(
+      `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}&saved=true`,
+    );
+  } else {
+    response = await axiosInstance.get<FeedbackListResponse>(
+      `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}`,
+    );
+  }
   return response.data.data;
 };
 
@@ -66,6 +76,13 @@ export const feedbackReply = async (
 export const markAsSave = async (feedbackId: string) => {
   const response = await axiosInstance.patch(
     `${endpoints.feedback.feedbackSave}/${feedbackId}`,
+  );
+  return response.data;
+};
+
+export const savedFeedbacks = async () => {
+  const response = await axiosInstance.get<SavedFeedbackResponse>(
+    endpoints.feedback.allSavedFeedback,
   );
   return response.data;
 };

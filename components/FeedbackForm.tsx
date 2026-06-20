@@ -13,6 +13,7 @@ import {
   Alert,
   FormHelperText,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import RateReviewIcon from "@mui/icons-material/RateReview";
@@ -45,7 +46,7 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps) {
   } = useForm({
     resolver: yupResolver(feedbackSchema),
     defaultValues: {
-      guestName: userData?.fullname || "",
+      guestName: userData?.fullName || "",
       guestEmail: userData?.email || "",
       feedback: "",
     },
@@ -150,9 +151,14 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps) {
               color="primary"
               size="large"
               endIcon={<SendIcon />}
+              disabled={isPending}
               sx={{ alignSelf: "flex-start", py: 1.2, px: 3, borderRadius: 2 }}
             >
-              Submit Review
+              {isPending ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Submit Review"
+              )}
             </Button>
           </Box>
         </form>

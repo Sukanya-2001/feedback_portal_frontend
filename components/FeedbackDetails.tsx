@@ -3,6 +3,7 @@ import {
   useMarkAsSave,
   useReplyonFeedback,
 } from "@/Functions/react-queries/feedbacks.query";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Paper,
   Box,
@@ -16,6 +17,7 @@ import {
   Button,
   Collapse,
   TextField,
+  InputAdornment,
 } from "@mui/material";
 import { useState } from "react";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -25,7 +27,7 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { DeveloperReply } from "./DeveloperReply";
 import { toast } from "sonner";
 
-export const FeedbackDetails = ({ projectId }: { projectId: string }) => {
+export const FeedbackDetails = ({ projectId, saved }: { projectId: string; saved?: boolean }) => {
   const [sortBy, setSortBy] = useState<string>("newest");
   const [filterSaved, setFilterSaved] = useState<string>("all");
 
@@ -33,7 +35,7 @@ export const FeedbackDetails = ({ projectId }: { projectId: string }) => {
     data: feedbacks,
     isLoading,
     refetch,
-  } = useFeedbackList(1, 10, projectId);
+  } = useFeedbackList(1, 10, projectId, saved);
 
   const { mutateAsync, isPending } = useMarkAsSave();
 
@@ -61,34 +63,37 @@ export const FeedbackDetails = ({ projectId }: { projectId: string }) => {
 
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="bookmark-filter-label">
-                Filter Bookmarked
-              </InputLabel>
-              <Select
-                labelId="bookmark-filter-label"
-                id="bookmark-filter"
-                value={filterSaved}
-                label="Filter Bookmarked"
-                onChange={(e) => setFilterSaved(e.target.value)}
-              >
-                <MenuItem value="all">Show All Feedbacks</MenuItem>
-                <MenuItem value="saved">Show Bookmarked Only</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              fullWidth
+              variant="outlined"
+              size="small"
+              placeholder="Search your projects by name..."
+              // value={searchQuery}
+              // onChange={(e) => setSearchQuery(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="action" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="sort-filter-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-filter-label"
-                id="sort-filter"
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
+            <FormControl
+              size="small"
+              sx={{
+                width: '100%'
+              }}
+            >
+              <InputLabel>Sort By</InputLabel>
+
+              <Select defaultValue="newest" label="Sort By">
                 <MenuItem value="newest">Newest First</MenuItem>
+
                 <MenuItem value="oldest">Oldest First</MenuItem>
               </Select>
             </FormControl>

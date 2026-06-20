@@ -42,9 +42,21 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
   const menuItems = [
     { text: "Overview", icon: <DashboardIcon />, path: "/dashboard" },
     { text: "My Projects", icon: <WebIcon />, path: "/dashboard/projects" },
-    { text: "All Feedbacks", icon: <ForumIcon />, path: "/dashboard/feedbacks" },
-    { text: "Saved Feedbacks", icon: <BookmarkIcon />, path: "/dashboard/saved-feedbacks" },
-    { text: "My Profile", icon: <AccountBoxIcon />, path: "/dashboard/profile" },
+    {
+      text: "All Feedbacks",
+      icon: <ForumIcon />,
+      path: "/dashboard/feedbacks",
+    },
+    {
+      text: "Saved Feedbacks",
+      icon: <BookmarkIcon />,
+      path: "/dashboard/saved-feedbacks",
+    },
+    {
+      text: "My Profile",
+      icon: <AccountBoxIcon />,
+      path: "/dashboard/profile",
+    },
   ];
 
   const handleLogout = async () => {
@@ -70,35 +82,21 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
         bgcolor: "background.paper",
         borderRight: "1px solid",
         borderColor: "divider",
+        paddingTop:"50px"
       }}
     >
-      {/* Sidebar Header: User profile info */}
-      <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
-        <Avatar
-          sx={{
-            bgcolor: "primary.main",
-            width: 46,
-            height: 46,
-            fontSize: "1.1rem",
-            fontWeight: 700,
-          }}
-        >
-          {(userData.fullname || "U").charAt(0).toUpperCase()}
-        </Avatar>
-        <Box sx={{ overflow: "hidden" }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }} noWrap>
-            {userData.fullname}
-          </Typography>
-          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>
-            {userData.email}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Divider />
 
       {/* Navigation List */}
-      <List sx={{ px: 2, py: 3, flexGrow: 1, display: "flex", flexDirection: "column", gap: 0.5 }}>
+      <List
+        sx={{
+          px: 2,
+          py: 3,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.5,
+        }}
+      >
         {menuItems.map((item) => {
           // Check if active: exact match or sub-route match (e.g. /dashboard/projects/create should highlight /dashboard/projects)
           const isActive =
@@ -121,7 +119,9 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
                     color: isActive ? "primary.main" : "text.disabled",
                   },
                   "&:hover": {
-                    bgcolor: isActive ? "rgba(79, 70, 229, 0.12)" : "rgba(0, 0, 0, 0.02)",
+                    bgcolor: isActive
+                      ? "rgba(79, 70, 229, 0.12)"
+                      : "rgba(0, 0, 0, 0.02)",
                     color: isActive ? "primary.main" : "text.primary",
                     "& .MuiListItemIcon-root": {
                       color: isActive ? "primary.main" : "text.secondary",
@@ -137,8 +137,8 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
                   slotProps={{
                     primary: {
                       variant: "body2",
-                      sx: { fontWeight: isActive ? 700 : 500 }
-                    }
+                      sx: { fontWeight: isActive ? 700 : 500 },
+                    },
                   }}
                 />
               </ListItemButton>

@@ -7,6 +7,7 @@ import {
   Button,
   Container,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { SignUpSchema, SignUpType } from "../../Functions/schema/signup.schema";
 import { useForm } from "react-hook-form";
@@ -112,7 +113,11 @@ export const SignUp = () => {
           disabled={isPending}
           sx={{ py: 1.5, borderRadius: 2 }}
         >
-          Sign Up
+          {isPending ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Sign Up"
+          )}
         </Button>
       </Box>
     </form>

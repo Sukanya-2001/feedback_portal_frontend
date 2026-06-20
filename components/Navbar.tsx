@@ -209,7 +209,7 @@ export default function Navbar() {
                     color: "text.primary",
                   }}
                 >
-                  {userData.fullname}
+                  Hi, {userData?.fullName.split(" ")[0]}
                 </Typography>
                 <Tooltip title="Account settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -223,7 +223,7 @@ export default function Navbar() {
                         fontSize: "0.95rem",
                       }}
                     >
-                      {(userData.fullname || "U").charAt(0).toUpperCase()}
+                      {(userData.fullName || "U").charAt(0).toUpperCase()}
                     </Avatar>
                   </IconButton>
                 </Tooltip>

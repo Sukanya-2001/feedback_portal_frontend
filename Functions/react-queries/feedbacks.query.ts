@@ -5,6 +5,7 @@ import {
   feedbackDelete,
   feedbackReply,
   markAsSave,
+  savedFeedbacks,
 } from "@/api/hooks/feedbacks/feedback.api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
@@ -20,10 +21,11 @@ export const useFeedbackList = (
   page: number,
   limit: number,
   projectId: string,
+  saved?: boolean,
 ) => {
   return useQuery({
-    queryKey: [allkeys.FEEDBACK_LIST, projectId, page, limit],
-    queryFn: () => feedbackList({ page, limit, projectId }),
+    queryKey: [allkeys.FEEDBACK_LIST, projectId, page, limit, saved],
+    queryFn: () => feedbackList({ page, limit, projectId, saved }),
     enabled: !!projectId,
   });
 };
@@ -62,9 +64,16 @@ export const useReplyonFeedback = () => {
 };
 
 export const useMarkAsSave = () => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: [allkeys.FEEDBACK_MARK_AS_SAVE],
     mutationFn: (feedbackId: string) => markAsSave(feedbackId),
+  });
+};
+
+export const useAllSavedFeedbacks = () => {
+  return useQuery({
+    queryKey: [allkeys.ALL_SAVED_FEEDBACKS],
+    queryFn: savedFeedbacks,
+    select: (data) => data?.data,
   });
 };

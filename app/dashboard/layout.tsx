@@ -144,7 +144,7 @@ export default function DashboardLayout({
                 color: "text.primary",
               }}
             >
-              {userData?.fullname ?? "Unkown User"}
+              {userData?.fullName ?? "Unkown User"}
             </Typography>
             <Tooltip title="User actions">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -157,7 +157,7 @@ export default function DashboardLayout({
                     fontSize: "0.85rem",
                   }}
                 >
-                  {(userData?.fullname || "U").charAt(0).toUpperCase()}
+                  {(userData?.fullName || "U").charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
             </Tooltip>
@@ -255,7 +255,7 @@ export default function DashboardLayout({
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          pt: { xs: 10, md: 12 }, // offset fixed Header height
+          // pt: { xs: 10, md: 12 }, // offset fixed Header height
           bgcolor: "#f8fafc",
         }}
       >

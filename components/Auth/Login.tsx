@@ -1,4 +1,4 @@
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, CircularProgress } from "@mui/material";
 import Link from "next/link";
 import LoginIcon from "@mui/icons-material/Login";
 import { useForm } from "react-hook-form";
@@ -107,7 +107,11 @@ export const Login = () => {
           disabled={isPending}
           sx={{ py: 1.5, borderRadius: 2 }}
         >
-          Log In
+          {isPending ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Log In"
+          )}
         </Button>
       </Box>
     </form>
