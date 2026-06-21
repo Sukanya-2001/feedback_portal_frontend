@@ -8,10 +8,16 @@ export const ProfileSchema = yup.object({
     .required("Full name is required"),
 
   image: yup
-    .mixed<File | string>()
-    .test("required", "Profile image is required", (value) => {
-      return value instanceof File || typeof value === "string";
-    }),
+  .mixed<File | string>()
+  .required("Profile image is required")
+  .test(
+    "file-or-url",
+    "Profile image is required",
+    (value) => !!value && (value instanceof File || typeof value === "string")
+  ),
 });
 
-export type ProfileType = yup.InferType<typeof ProfileSchema>;
+export type ProfileType = {
+  fullName: string;
+  image: string | File;
+};

@@ -26,6 +26,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import { getImage } from "@/api/endpoints";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -214,6 +215,9 @@ export default function Navbar() {
                 <Tooltip title="Account settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
+                      src={
+                        userData?.image ? getImage(userData.image) : undefined
+                      }
                       sx={{
                         bgcolor: "primary.main",
                         color: "primary.contrastText",
@@ -223,7 +227,8 @@ export default function Navbar() {
                         fontSize: "0.95rem",
                       }}
                     >
-                      {(userData.fullName || "U").charAt(0).toUpperCase()}
+                      {!userData?.image &&
+                        (userData?.fullName || "U").charAt(0).toUpperCase()}
                     </Avatar>
                   </IconButton>
                 </Tooltip>

@@ -15,7 +15,7 @@ export const endpoints = {
     resetPassword: "auth/reset-password",
     changePassword: "change-password",
     profileDetails: "profile",
-    profileUpdate: "",
+    profileUpdate: "update-profile",
   },
   projects: {
     List: "projects/getall",

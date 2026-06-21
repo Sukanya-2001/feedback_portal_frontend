@@ -7,6 +7,7 @@ import {
 } from "./auth.interface";
 import { BaseApiResponse } from "@/api/common/interface";
 import { getCookieValue } from "@/util/common";
+import { ChangePssType } from "@/Functions/schema/changePassword.schema";
 
 export const login = async (payload: { email: string; password: string }) => {
   const response = await axiosInstance.post<LoginResponse>(
@@ -63,10 +64,7 @@ export const resetPassword = async (payload: {
   return response.data;
 };
 
-export const changePassword = async (payload: {
-  oldPassword: string;
-  newPassword: string;
-}) => {
+export const changePassword = async (payload: ChangePssType) => {
   const response = await axiosInstance.post<BaseApiResponse>(
     endpoints.auth.changePassword,
     payload,
@@ -86,11 +84,8 @@ export const profileDetails = async () => {
   }
 };
 
-export const profileUpdate = async (payload: {
-  fullname: string;
-  email: string;
-}) => {
-  const response = await axiosInstance.put<ProfileDetailsResponse>(
+export const profileUpdate = async (payload: FormData) => {
+  const response = await axiosInstance.patch<ProfileDetailsResponse>(
     endpoints.auth.profileUpdate,
     payload,
   );

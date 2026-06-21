@@ -78,7 +78,7 @@ export default function DashboardLayout({
     await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
     dispatch(setLogout());
     handleCloseUserMenu();
-    router.push("/");
+    router.push("/auth/login");
   };
 
   // Get current view title based on path
