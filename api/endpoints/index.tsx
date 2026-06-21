@@ -35,6 +35,11 @@ export const endpoints = {
     delete: "feedbacks",
     reply: "feedbacks/reply/update",
     feedbackSave: "feedbacks/save",
-    allSavedFeedback: "savedFeedbacks"
+    allSavedFeedback: "savedFeedbacks",
+  },
+  dashboard: {
+    count: "dashboard-count",
+    graph: "dashboard-graph",
+    recentFeedback: "recent-feedbacks",
   },
 };

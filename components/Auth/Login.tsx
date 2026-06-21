@@ -28,7 +28,6 @@ export const Login = () => {
     mutateAsync(data, {
       onSuccess: async (res) => {
         if (res.status === 200) {
-          console.log(res.data, process.env.NEXT_PUBLIC_ACCESS_TOKEN);
           dispatch(setProfileData(res.data.userExist));
           await setCookieValue(
             process.env.NEXT_PUBLIC_ACCESS_TOKEN!,

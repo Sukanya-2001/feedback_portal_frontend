@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 
 export const ChangePassword = () => {
   const dispatch = useDispatch();
-  const router = useRouterprojects();
+  const router = useRouter();
   const {
     register,
     handleSubmit,

@@ -31,7 +31,6 @@ export default function ProjectDetailPage({
   const resolvedParams = use(params);
   const projectId = resolvedParams.id;
 
-  console.log(projectId);
   const {
     data: project,
     isLoading: projectLoading,
