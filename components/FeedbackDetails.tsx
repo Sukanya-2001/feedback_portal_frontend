@@ -24,6 +24,7 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import { DeveloperReply } from "./DeveloperReply";
 import { toast } from "sonner";
 import FeedbackSkeleton from "./Skeleton/FeedbackSkeleton";
+import { useDebounce } from "@/util/useDebounce";
 
 export const FeedbackDetails = ({
   projectId,
@@ -32,14 +33,16 @@ export const FeedbackDetails = ({
   projectId: string;
   saved?: boolean;
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
-  const [filterSaved, setFilterSaved] = useState<string>("all");
+
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
   const {
     data: feedbacks,
     isLoading,
     refetch,
-  } = useFeedbackList(1, 10, projectId, saved);
+  } = useFeedbackList(1, 10, projectId, saved, sortBy, debouncedSearch);
 
   const { mutateAsync, isPending } = useMarkAsSave();
 
@@ -71,9 +74,9 @@ export const FeedbackDetails = ({
               fullWidth
               variant="outlined"
               size="small"
-              placeholder="Search your projects by name..."
-              // value={searchQuery}
-              // onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search your feedbacks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -93,11 +96,15 @@ export const FeedbackDetails = ({
                 width: "100%",
               }}
             >
-              <InputLabel>Sort By</InputLabel>
+              <InputLabel id="sort-by-label">Sort By</InputLabel>
 
-              <Select defaultValue="newest" label="Sort By">
+              <Select
+                labelId="sort-by-label"
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
                 <MenuItem value="newest">Newest First</MenuItem>
-
                 <MenuItem value="oldest">Oldest First</MenuItem>
               </Select>
             </FormControl>
@@ -126,7 +133,7 @@ export const FeedbackDetails = ({
             No feedbacks found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {filterSaved === "saved"
+            {saved
               ? "You haven't bookmarked any feedbacks for this project yet."
               : "No users have left feedback for this project yet."}
           </Typography>

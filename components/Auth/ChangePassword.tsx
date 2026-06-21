@@ -18,13 +18,13 @@ import { useChangePassword } from "@/Functions/react-queries/auth.query";
 import { toast } from "sonner";
 import { deleteCookieValue } from "@/util/common";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
-import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { Errortxt } from "../ErrorTxt";
+import { useRouter } from "next/navigation";
 
 export const ChangePassword = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const router = useRouterprojects();
   const {
     register,
     handleSubmit,

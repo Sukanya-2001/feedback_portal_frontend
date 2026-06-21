@@ -9,10 +9,15 @@ import {
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
 
-export const useProjectList = (page: number, limit: number) => {
+export const useProjectList = (
+  page: number,
+  limit: number,
+  category?: string,
+  search?: string,
+) => {
   return useQuery({
-    queryKey: [allkeys.PROJECT_LIST],
-    queryFn: () => projectList({ page, limit }),
+    queryKey: [allkeys.PROJECT_LIST, page, limit, category, search],
+    queryFn: () => projectList({ page, limit, category, search }),
   });
 };
 

@@ -9,15 +9,35 @@ import {
 export const projectList = async ({
   page,
   limit,
+  category,
+  search,
 }: {
   page: number;
   limit: number;
+  category?: string;
+  search?: string;
 }) => {
+  const queryParams: Record<string, string | number> = {
+    page,
+    limit,
+  };
+
+  if (category && category !== "all") {
+    queryParams.category = category;
+  }
+
+  if (search?.trim()) {
+    queryParams.search = search.trim();
+  }
+
   const response = await axiosInstance.get<ProjectListResponse>(
-    `${endpoints.projects.List}?page=${page}&limit=${limit}`,
+    endpoints.projects.List,
+    {
+      params: queryParams,
+    },
   );
-  const data = response.data.data;
-  return data;
+
+  return response.data.data;
 };
 
 export const allProjectList = async ({

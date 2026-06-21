@@ -24,16 +24,18 @@ import { useProjectList } from "@/Functions/react-queries/projects.query";
 import { ProjectAddEditModal } from "@/components/ProjectAddEditModal";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
+import { useDebounce } from "@/util/useDebounce";
 
 export default function MyProjectsPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
   const [addEditModalOpen, setAddEditModalOpen] = useState(false);
   const { data: categoryList, isPending } = useCategoryList();
-
-  const { data } = useProjectList(1, 10);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
+
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  const { data } = useProjectList(1, 10, selectedTag, debouncedSearch);
 
   if (!isLoggedIn || !userData) return null;
 
@@ -185,7 +187,7 @@ export default function MyProjectsPage() {
       ) : (
         <Grid container spacing={3}>
           {data?.projects.map((project: ProjectDetails) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project._id}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={project._id}>
               {/* Box container wrapping the Card to add management overlay actions */}
               <ProjectList projects={project} myProject />
             </Grid>

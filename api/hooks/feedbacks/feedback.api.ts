@@ -25,22 +25,40 @@ export const feedbackList = async ({
   limit,
   projectId,
   saved,
+  sortBy,
+  search,
 }: {
   page: number;
   limit: number;
   projectId: string;
   saved?: boolean;
+  sortBy?: string;
+  search?: string;
 }) => {
-  let response;
+  const queryParams: Record<string, string | number> = {
+    page,
+    limit,
+  };
+
   if (saved) {
-    response = await axiosInstance.get<FeedbackListResponse>(
-      `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}&saved=true`,
-    );
-  } else {
-    response = await axiosInstance.get<FeedbackListResponse>(
-      `${endpoints.feedback.list}/${projectId}?page=${page}&limit=${limit}`,
-    );
+    queryParams.saved = "true";
   }
+
+  if (sortBy) {
+    queryParams.sortBy = sortBy;
+  }
+
+  if (search?.trim()) {
+    queryParams.search = search.trim();
+  }
+
+  const response = await axiosInstance.get<FeedbackListResponse>(
+    `${endpoints.feedback.list}/${projectId}`,
+    {
+      params: queryParams,
+    },
+  );
+
   return response.data.data;
 };
 

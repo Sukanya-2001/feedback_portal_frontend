@@ -22,10 +22,12 @@ export const useFeedbackList = (
   limit: number,
   projectId: string,
   saved?: boolean,
+  sortBy?: string,
+  search?: string
 ) => {
   return useQuery({
-    queryKey: [allkeys.FEEDBACK_LIST, projectId, page, limit, saved],
-    queryFn: () => feedbackList({ page, limit, projectId, saved }),
+    queryKey: [allkeys.FEEDBACK_LIST, projectId, page, limit, saved, sortBy, search],
+    queryFn: () => feedbackList({ page, limit, projectId, saved, sortBy, search }),
     enabled: !!projectId,
   });
 };

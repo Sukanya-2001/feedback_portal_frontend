@@ -93,7 +93,7 @@ export default function FeedbacksPage() {
             const cardGradient = gradients[textSeed % gradients.length];
 
             return (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={p._id}>
+              <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={p._id}>
                 <Card
                   sx={{
                     height: "100%",
@@ -111,7 +111,6 @@ export default function FeedbacksPage() {
                       borderColor: "primary.main",
                     },
                   }}
-                  
                 >
                   {/* Decorative Top Gradient bar */}
                   <Box sx={{ height: 4, background: cardGradient }} />
@@ -197,12 +196,8 @@ export default function FeedbacksPage() {
                             ? "1 feedback"
                             : `${p?.feedbackCount} feedbacks`
                         }
-                        color={
-                          p?.feedbackCount > 0 ? "primary" : "default"
-                        }
-                        variant={
-                          p?.feedbackCount > 0 ? "filled" : "outlined"
-                        }
+                        color={p?.feedbackCount > 0 ? "primary" : "default"}
+                        variant={p?.feedbackCount > 0 ? "filled" : "outlined"}
                         size="small"
                         sx={{ fontWeight: 700, px: 0.5 }}
                       />
