@@ -18,12 +18,11 @@ import WebIcon from "@mui/icons-material/Web";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
-import { useMockDatabase } from "@/components/MockDatabase";
 import { useProjectList } from "@/Functions/react-queries/projects.query";
 
 export default function FeedbacksPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
-  const { data: projects, isLoading } = useProjectList(1, 10);
+  const { data: projects } = useProjectList(1, 10);
 
   if (!isLoggedIn || !userData) return null;
 

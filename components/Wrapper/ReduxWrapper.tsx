@@ -2,7 +2,6 @@
 
 import { Provider } from "react-redux";
 import store from "@/redux-toolkit/store/store";
-import { ProfileWrapper } from "./ProfileWrapper";
 import ProfileLoader from "./ProfileLoader";
 
 type ReduxProviderProps = {

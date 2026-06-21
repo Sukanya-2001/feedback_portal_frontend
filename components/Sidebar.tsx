@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,11 +13,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Avatar,
   Divider,
   Button,
-  Paper,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import WebIcon from "@mui/icons-material/Web";

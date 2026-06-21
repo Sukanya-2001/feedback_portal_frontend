@@ -6,28 +6,13 @@ import {
   Box,
   Typography,
   Paper,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  IconButton,
-  Tooltip,
-  Divider,
-  Pagination,
   Button,
   Chip,
   Stack,
-  InputAdornment,
   Breadcrumbs,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import SearchIcon from "@mui/icons-material/Search";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import WebIcon from "@mui/icons-material/Web";
-import { useFeedbackList } from "@/Functions/react-queries/feedbacks.query";
 import { FeedbackDetails } from "@/components/FeedbackDetails";
 import { useProjectDetails } from "@/Functions/react-queries/projects.query";
 
@@ -41,7 +26,6 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
   const { projectSlug } = use(params);
   const {
     data: project,
-    isLoading: projectLoading,
     isError,
   } = useProjectDetails(projectSlug);
 

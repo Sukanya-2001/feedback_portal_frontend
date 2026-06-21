@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
@@ -32,7 +31,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const dispatch = useDispatch();
-  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
+  const { userData } = useSelector((s: RootState) => s.user);
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);

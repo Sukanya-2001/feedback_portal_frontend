@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Avatar, Paper, Divider } from "@mui/material";
+import { Box, Typography, Avatar, Paper } from "@mui/material";
 import { ChatBubbleOutlineOutlined as ChatBubbleOutlineIcon } from "@mui/icons-material";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { FeedbackData } from "@/api/hooks/feedbacks/feedback.interface";

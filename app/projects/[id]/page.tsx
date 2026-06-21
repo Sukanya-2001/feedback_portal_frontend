@@ -1,8 +1,7 @@
 "use client";
 
-import React, { use } from "react";
+import { use } from "react";
 import Link from "next/link";
-import { useMockDatabase } from "@/components/MockDatabase";
 import FeedbackForm from "@/components/FeedbackForm";
 import FeedbackList from "@/components/FeedbackList";
 import {
@@ -14,11 +13,9 @@ import {
   Chip,
   Paper,
   Divider,
-  Stack,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LanguageIcon from "@mui/icons-material/Language";
-import EmailIcon from "@mui/icons-material/Email";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useProjectDetails } from "@/Functions/react-queries/projects.query";

@@ -1,7 +1,6 @@
 import {
   useFeedbackList,
   useMarkAsSave,
-  useReplyonFeedback,
 } from "@/Functions/react-queries/feedbacks.query";
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -14,8 +13,6 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Button,
-  Collapse,
   TextField,
   InputAdornment,
 } from "@mui/material";
@@ -26,8 +23,15 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { DeveloperReply } from "./DeveloperReply";
 import { toast } from "sonner";
+import FeedbackSkeleton from "./Skeleton/FeedbackSkeleton";
 
-export const FeedbackDetails = ({ projectId, saved }: { projectId: string; saved?: boolean }) => {
+export const FeedbackDetails = ({
+  projectId,
+  saved,
+}: {
+  projectId: string;
+  saved?: boolean;
+}) => {
   const [sortBy, setSortBy] = useState<string>("newest");
   const [filterSaved, setFilterSaved] = useState<string>("all");
 
@@ -86,7 +90,7 @@ export const FeedbackDetails = ({ projectId, saved }: { projectId: string; saved
             <FormControl
               size="small"
               sx={{
-                width: '100%'
+                width: "100%",
               }}
             >
               <InputLabel>Sort By</InputLabel>
@@ -102,7 +106,9 @@ export const FeedbackDetails = ({ projectId, saved }: { projectId: string; saved
       </Paper>
 
       {/* Feedbacks Listing */}
-      {!!feedbacks && feedbacks?.feedbacks?.length === 0 ? (
+      {isLoading ? (
+        <FeedbackSkeleton />
+      ) : !!feedbacks && feedbacks?.feedbacks?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{

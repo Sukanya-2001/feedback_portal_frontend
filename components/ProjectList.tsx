@@ -1,14 +1,9 @@
 import { Box, Tooltip, IconButton } from "@mui/material";
 import ProjectCard from "./ProjectCard";
 import {
-  Search as SearchIcon,
-  Add as AddIcon,
-  Web as WebIcon,
   Edit as EditIcon,
   DeleteOutlineOutlined as DeleteOutlineIcon,
   Share as ShareIcon,
-  LibraryAdd as LibraryAddIcon,
-  OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
@@ -18,8 +13,6 @@ import CommonModal from "./Common/CommonModal";
 import { useProjectDelete } from "@/Functions/react-queries/projects.query";
 import { allkeys } from "@/Functions/react-queries/allKeys";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux-toolkit/store/store";
 
 export const ProjectList = ({
   projects,
@@ -111,12 +104,7 @@ export const ProjectList = ({
           </Tooltip>
         </Box>
       )}
-      <ProjectCard
-        project={projects}
-        // feedbacks={feedbacksList}
-        myProject={myProject || false}
-        isOwner={false}
-      />
+      <ProjectCard project={projects} myProject={myProject || false} />
       <ProjectAddEditModal
         addEditModal={addEditModalOpen}
         handleCloseModal={handleCloseModal}
@@ -129,6 +117,7 @@ export const ProjectList = ({
         description={`Are you sure you want to delete ${projects.projectName} project? This will permanently erase all feedbacks received.`}
         onAction={handleDelete}
         actionButtonText="Yes, Delete"
+        loading={isPending}
       />
     </Box>
   );

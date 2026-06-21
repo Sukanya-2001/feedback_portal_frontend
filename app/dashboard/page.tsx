@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Project, Feedback, INITIAL_PROJECTS, INITIAL_FEEDBACKS } from "@/components/MockDatabase";
+import {
+  Project,
+  Feedback,
+  INITIAL_PROJECTS,
+  INITIAL_FEEDBACKS,
+} from "@/components/MockDatabase";
 import Link from "next/link";
 import {
   Typography,
@@ -29,33 +34,36 @@ export default function DashboardPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
 
   // Local state for projects and feedbacks
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
+  const [projects] = useState<Project[]>(INITIAL_PROJECTS);
   const [feedbacks, setFeedbacks] = useState<Feedback[]>(INITIAL_FEEDBACKS);
 
   if (!isLoggedIn || !userData) return null;
 
   // Filter owned items. If user has no projects matching, we show user-1 projects by default so the dashboard displays mock statistics.
-  const userProjects = projects.filter((p) => p.userId === "user-1" || p.userName.toLowerCase() === userData.fullName?.toLowerCase());
+  const userProjects = projects.filter(
+    (p) =>
+      p.userId === "user-1" ||
+      p.userName.toLowerCase() === userData.fullName?.toLowerCase(),
+  );
   const userProjectIds = userProjects.map((p) => p.id);
   const userFeedbacks = feedbacks.filter((f) =>
     userProjectIds.includes(f.projectId),
   );
 
-  const toggleSaveFeedback = (feedbackId: string) => {
-    setFeedbacks(prev =>
-      prev.map(f => f.id === feedbackId ? { ...f, isSaved: !f.isSaved } : f)
-    );
-  };
-
   const totalProjects = userProjects.length;
   const totalFeedbacks = userFeedbacks.length;
 
-  const chartData = userProjects.map(p => ({
+  const chartData = userProjects.map((p) => ({
     name: p.name,
-    count: feedbacks.filter(f => f.projectId === p.id).length
+    count: feedbacks.filter((f) => f.projectId === p.id).length,
   }));
 
-  const last10Feedbacks = [...userFeedbacks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3);
+  const last10Feedbacks = [...userFeedbacks]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 3);
 
   const chartWidth = 400;
   const chartHeight = 200;

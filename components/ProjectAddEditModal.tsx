@@ -7,7 +7,6 @@ import {
   Box,
   FormHelperText,
   Autocomplete,
-  Grid,
   DialogActions,
   Button,
 } from "@mui/material";
@@ -17,7 +16,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ProjectSchema, ProjectType } from "@/Functions/schema/project.schema";
 import {
   useProjectCreate,
-  useProjectDetails,
   useProjectUpdate,
 } from "@/Functions/react-queries/projects.query";
 import { toast } from "sonner";
@@ -33,15 +31,6 @@ type AddEditModalProps = {
   projects?: ProjectDetails;
 };
 
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
-};
-
 export const ProjectAddEditModal = ({
   addEditModal,
   handleCloseModal,
@@ -49,7 +38,7 @@ export const ProjectAddEditModal = ({
 }: AddEditModalProps) => {
   const editingProject = !!projects;
   const queryClient = useQueryClient();
-  const { data: categoryList, isPending } = useCategoryList();
+  const { data: categoryList } = useCategoryList();
   const { mutateAsync: addMutate } = useProjectCreate();
   const { mutateAsync: updateMutate } = useProjectUpdate();
 

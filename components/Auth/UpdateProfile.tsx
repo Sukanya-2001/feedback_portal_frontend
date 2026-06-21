@@ -9,11 +9,10 @@ import {
   CircularProgress,
 } from "@mui/material";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { useEffect, useState } from "react";
 import SaveIcon from "@mui/icons-material/Save";
-import { setProfileData } from "@/redux-toolkit/slices/user.slice";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -67,7 +66,7 @@ export const UpdateProfile = () => {
         setValue("image", userData.image);
       }
     }
-  }, [userData]);
+  }, [userData, setValue]);
 
   return (
     <Paper

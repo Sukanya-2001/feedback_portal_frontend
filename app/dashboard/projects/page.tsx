@@ -1,15 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Project,
-  Feedback,
-  INITIAL_PROJECTS,
-  INITIAL_FEEDBACKS,
-} from "@/components/MockDatabase";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
-import ProjectCard from "@/components/ProjectCard";
 import {
   Typography,
   Grid,
@@ -18,26 +11,13 @@ import {
   Paper,
   TextField,
   InputAdornment,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormHelperText,
   Chip,
-  Stack,
-  IconButton,
-  Tooltip,
-  Autocomplete,
+  Skeleton,
 } from "@mui/material";
 import {
   Search as SearchIcon,
   Add as AddIcon,
   Web as WebIcon,
-  Edit as EditIcon,
-  DeleteOutlineOutlined as DeleteOutlineIcon,
-  Share as ShareIcon,
-  LibraryAdd as LibraryAddIcon,
-  OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
 import { ProjectList } from "@/components/ProjectList";
 import { useProjectList } from "@/Functions/react-queries/projects.query";
@@ -50,7 +30,7 @@ export default function MyProjectsPage() {
   const [addEditModalOpen, setAddEditModalOpen] = useState(false);
   const { data: categoryList, isPending } = useCategoryList();
 
-  const { data, isLoading } = useProjectList(1, 10);
+  const { data } = useProjectList(1, 10);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("all");
@@ -111,16 +91,28 @@ export default function MyProjectsPage() {
                 color={selectedTag === "all" ? "primary" : "default"}
                 onClick={() => setSelectedTag("all")}
               />
-              {!!categoryList?.data && categoryList.data?.length > 0 && categoryList.data.map((tag) => (
-                <Chip
-                  key={tag._id}
-                  label={tag.name}
-                  size="small"
-                  clickable
-                  onClick={() => setSelectedTag(tag._id)}
-                  color={selectedTag === tag._id ? "primary" : "default"}
-                />
-              ))}
+              {isPending
+                ? Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      variant="rounded"
+                      width={80}
+                      height={25}
+                      sx={{ borderRadius: 4 }}
+                    />
+                  ))
+                : !!categoryList?.data &&
+                  categoryList.data?.length > 0 &&
+                  categoryList.data.map((tag) => (
+                    <Chip
+                      key={tag._id}
+                      label={tag.name}
+                      size="small"
+                      clickable
+                      onClick={() => setSelectedTag(tag._id)}
+                      color={selectedTag === tag._id ? "primary" : "default"}
+                    />
+                  ))}
             </Box>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
@@ -195,7 +187,7 @@ export default function MyProjectsPage() {
           {data?.projects.map((project: ProjectDetails) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project._id}>
               {/* Box container wrapping the Card to add management overlay actions */}
-              <ProjectList projects={project} myProject/>
+              <ProjectList projects={project} myProject />
             </Grid>
           ))}
         </Grid>

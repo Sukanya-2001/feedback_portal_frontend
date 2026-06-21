@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { Box, Container, Typography, Link } from "@mui/material";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const pathname = usePathname();

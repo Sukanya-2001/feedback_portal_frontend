@@ -21,7 +21,6 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
 
   const {
     data: project,
-    isLoading: projectLoading,
     isError,
   } = useProjectDetails(projectId);
 

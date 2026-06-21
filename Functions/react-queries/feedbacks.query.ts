@@ -7,7 +7,7 @@ import {
   markAsSave,
   savedFeedbacks,
 } from "@/api/hooks/feedbacks/feedback.api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { allkeys } from "./allKeys";
 
 export const useFeedbackCreate = () => {

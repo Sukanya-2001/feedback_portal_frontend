@@ -1,16 +1,13 @@
 import {
   Box,
   Typography,
-  Alert,
   TextField,
   Button,
   CircularProgress,
 } from "@mui/material";
-import { error } from "console";
 import Link from "next/link";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { ChildProps } from "@/app/auth/forgot-password/page";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ForgotSchema, ForgotType } from "@/Functions/schema/forgot.schema";
 import { useForm } from "react-hook-form";

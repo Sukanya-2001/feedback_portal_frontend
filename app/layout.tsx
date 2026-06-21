@@ -6,9 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Box } from "@mui/material";
 import ReduxProvider from "@/components/Wrapper/ReduxWrapper";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import QueryProvider from "@/components/Wrapper/QueryProvider";
-import { ProfileWrapper } from "@/components/Wrapper/ProfileWrapper";
 
 const geistSans = {
   variable: "--font-geist-sans",

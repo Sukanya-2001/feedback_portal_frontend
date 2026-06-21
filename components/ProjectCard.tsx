@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { Project, Feedback, useMockDatabase } from "./MockDatabase";
 import {
   Card,
   CardMedia,
@@ -12,13 +11,9 @@ import {
   Box,
   Button,
   Chip,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
 import {
-  DeleteOutlineOutlined as DeleteOutlineIcon,
   OpenInNew as OpenInNewIcon,
-  Favorite as FavoriteIcon,
   Share as ShareIcon,
 } from "@mui/icons-material";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
@@ -29,17 +24,10 @@ import { toast } from "sonner";
 
 interface ProjectCardProps {
   project: ProjectDetails;
-  feedbacks?: Feedback[];
-  isOwner?: boolean;
   myProject?: boolean;
 }
 
-export default function ProjectCard({
-  project,
-  feedbacks,
-  isOwner = false,
-  myProject,
-}: ProjectCardProps) {
+export default function ProjectCard({ project, myProject }: ProjectCardProps) {
   const { userData } = useSelector((s: RootState) => s.user);
 
   // Premium CSS gradients to fall back to if image fails or is missing
@@ -76,30 +64,13 @@ export default function ProjectCard({
       {project.image ? (
         <CardMedia
           component="img"
-          height="160"
           image={getImage(project.image)}
           alt={project.projectName}
           sx={{
+            height: 220,
+            width: "100%",
             objectFit: "cover",
-            backgroundColor: "#f1f5f9",
-          }}
-          onError={(e) => {
-            // If the image fails to load, replace with gradient
-            (e.target as HTMLElement).style.display = "none";
-            const parent = (e.target as HTMLElement).parentElement;
-            if (parent) {
-              const fallback = document.createElement("div");
-              fallback.style.height = "160px";
-              fallback.style.background = selectGradient;
-              fallback.style.display = "flex";
-              fallback.style.alignItems = "center";
-              fallback.style.justifyContent = "center";
-              fallback.style.color = "white";
-              fallback.style.fontWeight = "bold";
-              fallback.style.fontSize = "2.5rem";
-              fallback.innerText = project.projectName.charAt(0).toUpperCase();
-              parent.insertBefore(fallback, parent.firstChild);
-            }
+            objectPosition: "center",
           }}
         />
       ) : (

@@ -1,7 +1,6 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCookieValue } from "./util/common";
 
 export function proxy(request: NextRequest) {
   // Check for your auth cookie or token

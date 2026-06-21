@@ -1,12 +1,7 @@
 import {
   Box,
-  Card,
-  CardContent,
-  Typography,
   TextField,
   Button,
-  Container,
-  Alert,
   CircularProgress,
 } from "@mui/material";
 import { SignUpSchema, SignUpType } from "../../Functions/schema/signup.schema";

@@ -1,11 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useMockDatabase } from "@/components/MockDatabase";
-import ProjectCard from "@/components/ProjectCard";
-import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
+import { useState } from "react";
 import {
-  Container,
   Typography,
   Grid,
   TextField,
@@ -17,6 +13,7 @@ import {
   Select,
   MenuItem,
   Stack,
+  Container,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
@@ -25,14 +22,13 @@ import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { ProjectList } from "@/components/ProjectList";
 
 export default function ProjectsPage() {
-  const { projects, feedbacks } = useMockDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const { data: categoryList, isPending } = useCategoryList();
+  const { data: categoryList } = useCategoryList();
 
-  const { data, isLoading } = useAllProjectList(1, 10);
+  const { data } = useAllProjectList(1, 10);
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>

@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useState } from "react";
 import {
-  Box,
   Card,
   CardContent,
-  Typography,
-  TextField,
-  Button,
   Container,
-  Alert,
-  CircularProgress,
 } from "@mui/material";
 import { ForgotPassword } from "@/components/Auth/ForgotPassword";
 import { VerifyEmail } from "@/components/Auth/VerifyEmail";

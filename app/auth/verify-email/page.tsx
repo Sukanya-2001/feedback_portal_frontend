@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Container,
-  Alert,
-  Stack,
-  CircularProgress,
-} from "@mui/material";
+import { Card, CardContent, Container, CircularProgress } from "@mui/material";
 import { VerifyEmail } from "@/components/Auth/VerifyEmail";
 
 function VerifyEmailContent() {
@@ -49,8 +38,6 @@ function VerifyEmailContent() {
     }
   };
 
-  
-
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -78,8 +65,6 @@ function VerifyEmailContent() {
       }
     }, 1000);
   };
-
-  
 
   return (
     <Container

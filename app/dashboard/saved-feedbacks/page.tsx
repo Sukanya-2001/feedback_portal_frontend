@@ -1,15 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
-import {
-  Project,
-  Feedback,
-  INITIAL_PROJECTS,
-  INITIAL_FEEDBACKS,
-} from "@/components/MockDatabase";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux-toolkit/store/store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -18,10 +9,8 @@ import {
   Typography,
   Box,
   Paper,
-  Divider,
   Button,
   Grid,
-  Chip,
   IconButton,
   Tooltip,
 } from "@mui/material";

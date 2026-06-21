@@ -114,7 +114,12 @@ export const DeveloperReply = ({ feedback, hasReply, refetch }: ReplyProps) => {
               justifyContent: "flex-end",
             }}
           >
-            <Button size="small" variant="text" onClick={handleCloseReplyForm}>
+            <Button
+              size="small"
+              variant="text"
+              disabled={isPending}
+              onClick={handleCloseReplyForm}
+            >
               Cancel
             </Button>
             <Button
@@ -123,6 +128,7 @@ export const DeveloperReply = ({ feedback, hasReply, refetch }: ReplyProps) => {
               color="primary"
               endIcon={<ArrowCircleUpIcon />}
               onClick={() => handleSubmitReply(feedback._id)}
+              disabled={isPending}
             >
               Send Response
             </Button>
