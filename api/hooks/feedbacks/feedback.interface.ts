@@ -53,6 +53,7 @@ export interface SavedFeedbackData {
     reply: {
       _id: string;
       comment: string;
+      created_at: string;
     };
   }[];
 }

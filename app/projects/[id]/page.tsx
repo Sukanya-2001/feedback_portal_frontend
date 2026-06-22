@@ -131,8 +131,7 @@ export default function ProjectDetailPage({
 
             {/* Project Header details */}
             <Typography
-              variant="h3"
-              component="h1"
+              variant="h4"
               gutterBottom
               sx={{ fontWeight: 800, lineHeight: 1.2 }}
             >
@@ -151,13 +150,26 @@ export default function ProjectDetailPage({
               ))}
             </Box>
 
-            <Typography
-              variant="body1"
-              color="text.primary"
-              sx={{ mb: 4, fontSize: "1.08rem", lineHeight: 1.7 }}
-            >
-              {project?.description}
-            </Typography>
+            <Box
+              sx={{
+                width: "100%",
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
+                overflow: "hidden",
+
+                "& img": {
+                  maxWidth: "100%",
+                  height: "auto",
+                },
+
+                "& *": {
+                  maxWidth: "100%",
+                },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: project?.description ?? "",
+              }}
+            />
 
             <Divider sx={{ my: 4 }} />
 

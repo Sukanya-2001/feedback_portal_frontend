@@ -6,6 +6,7 @@ import { ChatBubbleOutlineOutlined as ChatBubbleOutlineIcon } from "@mui/icons-m
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { FeedbackData } from "@/api/hooks/feedbacks/feedback.interface";
 import FeedbackListSkeleton from "./Skeleton/FeedbackListSkeleton";
+import { formatDateTime } from "@/util/common";
 
 interface FeedbackListProps {
   feedbacks: { feedbacks: FeedbackData[]; total: number } | undefined;
@@ -81,7 +82,7 @@ export default function FeedbackList({
                     {item?.guestName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {formatDate(item.createdAt)}
+                    {formatDateTime(item.createdAt)}
                   </Typography>
                 </Box>
 
@@ -126,7 +127,7 @@ export default function FeedbackList({
                         color="text.secondary"
                         sx={{ ml: "auto" }}
                       >
-                        {formatDate(item.reply.created_at)}
+                        {formatDateTime(item.reply.created_at)}
                       </Typography>
                     </Box>
                     <Typography

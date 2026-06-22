@@ -24,6 +24,7 @@ import {
 } from "@/Functions/react-queries/feedbacks.query";
 import { toast } from "sonner";
 import { SavedFeedbackSkeleton } from "@/components/Skeleton/SaveFeedbackSkeleton";
+import { formatDateTime } from "@/util/common";
 
 export default function SavedFeedbacksPage() {
   const { data: savedFeedbacks, isLoading, refetch } = useAllSavedFeedbacks();
@@ -189,7 +190,7 @@ export default function SavedFeedbacksPage() {
                           <Box
                             sx={{
                               position: "absolute",
-                              top: 12,
+                              top: 35,
                               right: 12,
                             }}
                           >
@@ -208,28 +209,48 @@ export default function SavedFeedbacksPage() {
                           <Box
                             sx={{
                               display: "flex",
-                              flexWrap: "wrap",
-                              alignItems: "center",
+                              justifyContent: "space-between",
+                              alignItems: { xs: "flex-start", sm: "center" },
+                              flexDirection: { xs: "column", sm: "row" },
                               gap: 1,
                               mb: 1,
-                              pr: 4,
                             }}
                           >
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ fontWeight: 700 }}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
                             >
-                              {f.guestName}
-                            </Typography>
-
-                            {f.guestEmail && (
                               <Typography
-                                variant="caption"
-                                color="text.secondary"
+                                variant="subtitle2"
+                                sx={{ fontWeight: 700 }}
                               >
-                                ({f.guestEmail})
+                                {f.guestName}
                               </Typography>
-                            )}
+
+                              {f.guestEmail && (
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                >
+                                  ({f.guestEmail})
+                                </Typography>
+                              )}
+                            </Box>
+
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{
+                                flexShrink: 0,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {formatDateTime(f.createdAt)}
+                            </Typography>
                           </Box>
 
                           <Typography
@@ -254,22 +275,47 @@ export default function SavedFeedbacksPage() {
                               <Box
                                 sx={{
                                   display: "flex",
-                                  alignItems: "center",
-                                  gap: 0.5,
-                                  mb: 0.5,
+                                  justifyContent: "space-between",
+                                  alignItems: {
+                                    xs: "flex-start",
+                                    sm: "center",
+                                  },
+                                  flexDirection: { xs: "column", sm: "row" },
+                                  gap: 1,
+                                  mb: 1,
                                 }}
                               >
-                                <RateReviewIcon
-                                  color="secondary"
-                                  sx={{ fontSize: 14 }}
-                                />
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                    // mb: 0.5,
+                                  }}
+                                >
+                                  <RateReviewIcon
+                                    color="secondary"
+                                    sx={{ fontSize: 14 }}
+                                  />
+
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontWeight: 700 }}
+                                    color="secondary.dark"
+                                  >
+                                    Your reply:
+                                  </Typography>
+                                </Box>
 
                                 <Typography
                                   variant="caption"
-                                  sx={{ fontWeight: 700 }}
-                                  color="secondary.dark"
+                                  color="text.secondary"
+                                  sx={{
+                                    flexShrink: 0,
+                                    whiteSpace: "nowrap",
+                                  }}
                                 >
-                                  Your reply:
+                                  {formatDateTime(f.reply.created_at)}
                                 </Typography>
                               </Box>
 

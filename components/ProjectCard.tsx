@@ -57,6 +57,12 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
     setReadMoreModal(!readMoreModal);
   };
 
+  const plainText =
+    typeof window !== "undefined"
+      ? new DOMParser().parseFromString(project?.description || "", "text/html")
+          .body.textContent || ""
+      : "";
+
   return (
     <Card
       sx={{
@@ -124,26 +130,35 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
           {project?.projectName}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary">
-          {project?.description?.length > 140
-            ? `${project.description.slice(0, 140)}... `
-            : project?.description}
+        <Box
+          sx={{
+            width: "100%",
+            overflow: "hidden",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            {plainText.length > 140
+              ? `${plainText.slice(0, 140)}...`
+              : plainText}
 
-          {project?.description?.length > 140 && (
-            <Typography
-              component="span"
-              color="primary"
-              sx={{
-                cursor: "pointer",
-                fontWeight: 500,
-                ml: 0.5,
-              }}
-              onClick={handleReadMore}
-            >
-              Read more
-            </Typography>
-          )}
-        </Typography>
+            {plainText.length > 140 && (
+              <Typography
+                component="span"
+                color="primary"
+                sx={{
+                  cursor: "pointer",
+                  fontWeight: 500,
+                  ml: 0.5,
+                }}
+                onClick={handleReadMore}
+              >
+                Read more
+              </Typography>
+            )}
+          </Typography>
+        </Box>
 
         <Box
           sx={{
@@ -243,6 +258,7 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
         title={project?.projectName}
         onCancel={handleReadMore}
         noCancelBtn
+        htmlText
       />
     </Card>
   );

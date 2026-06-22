@@ -16,7 +16,7 @@ import {
 } from "@/Functions/schema/changePassword.schema";
 import { useChangePassword } from "@/Functions/react-queries/auth.query";
 import { toast } from "sonner";
-import { deleteCookieValue } from "@/util/common";
+import { deleteCookieValue } from "@/util/cookies";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
 import { useDispatch } from "react-redux";
 import { Errortxt } from "../ErrorTxt";

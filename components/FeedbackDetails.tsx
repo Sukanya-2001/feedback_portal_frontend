@@ -25,6 +25,7 @@ import { DeveloperReply } from "./DeveloperReply";
 import { toast } from "sonner";
 import FeedbackSkeleton from "./Skeleton/FeedbackSkeleton";
 import { useDebounce } from "@/util/useDebounce";
+import { formatDateTime } from "@/util/common";
 
 export const FeedbackDetails = ({
   projectId,
@@ -192,7 +193,7 @@ export const FeedbackDetails = ({
                     )}
                   </Box>
                   <Typography variant="caption" color="text.secondary">
-                    {new Date(f.createdAt).toLocaleString()}
+                    {formatDateTime(f.createdAt)}
                   </Typography>
                 </Box>
 
@@ -227,7 +228,7 @@ export const FeedbackDetails = ({
                         color="text.secondary"
                         sx={{ ml: "auto" }}
                       >
-                        {new Date(f.reply!.created_at).toLocaleString()}
+                        {formatDateTime(f.reply!.created_at)}
                       </Typography>
                     </Box>
                     <Typography

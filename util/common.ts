@@ -1,25 +1,38 @@
-"use server";
+export const formatDateTime = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  const now = new Date();
 
-import { cookies } from "next/headers";
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-export async function setCookieValue(key: string, value: string | number) {
-  const cookieStore = await cookies(); 
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
 
-  cookieStore.set(key, String(value), {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+  const inputDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+
+  const time = date.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
-}
 
+  if (inputDate.getTime() === today.getTime()) {
+    return `Today, ${time}`;
+  }
 
-export async function getCookieValue(key: string){
-  const cookieStore = await cookies();
-  return cookieStore.get(key)?.value;
-}
+  if (inputDate.getTime() === yesterday.getTime()) {
+    return `Yesterday, ${time}`;
+  }
 
-export async function deleteCookieValue(key: string) {
-  const cookieStore = await cookies();
-  cookieStore.delete(key);
-}
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};

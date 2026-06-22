@@ -24,6 +24,8 @@ import { allkeys } from "@/Functions/react-queries/allKeys";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 import { getImage } from "@/api/endpoints";
+import ReactQuill from "./TextEditor/ReactQuill";
+import { Errortxt } from "./ErrorTxt";
 
 type AddEditModalProps = {
   addEditModal: boolean;
@@ -155,19 +157,19 @@ export const ProjectAddEditModal = ({
             name="description"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Project Description"
-                placeholder="Write a clear, detailed description of your project..."
-                multiline
-                rows={4}
-                slotProps={{
-                  inputLabel: { shrink: true },
-                }}
-                error={!!errors.description}
-                helperText={errors.description?.message}
-              />
+              <>
+                <ReactQuill
+                  theme="snow"
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  placeholder="Write a detailed description..."
+                  style={{ height: "250px", marginBottom: "50px" }}
+                />
+
+                {errors?.description && (
+                  <Errortxt msg={errors.description?.message ?? ""} />
+                )}
+              </>
             )}
           />
 

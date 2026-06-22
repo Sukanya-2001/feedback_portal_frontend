@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
-import { deleteCookieValue } from "@/util/common";
+import { deleteCookieValue } from "@/util/cookies";
 import {
   AppBar,
   Toolbar,
@@ -33,6 +33,7 @@ export default function Navbar() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
   const router = useRouter();
   const pathname = usePathname();
+
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 

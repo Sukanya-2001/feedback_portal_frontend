@@ -10,11 +10,9 @@ export const ProjectSchema = yup.object({
   description: yup
     .string()
     .trim()
-    .transform((value) =>
-    value ? value.replace(/\r\n/g, "\n").trim() : value
-  )
+    .transform((value) => (value ? value.replace(/\r\n/g, "\n").trim() : value))
     .min(20, "Description must be at least 20 charecters")
-    .max(2000, "Description must be at most 2000 charecters")
+    .max(10000, "Description must be at most 10000 charecters")
     .required("Description is required"),
   websiteLink: yup
     .string()

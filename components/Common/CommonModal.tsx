@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Box,
 } from "@mui/material";
 
 interface CommonModalProps {
@@ -18,6 +19,7 @@ interface CommonModalProps {
   onCancel: () => void;
   loading?: boolean;
   noCancelBtn?: boolean;
+  htmlText?: boolean;
 }
 
 const CommonModal: React.FC<CommonModalProps> = ({
@@ -30,13 +32,39 @@ const CommonModal: React.FC<CommonModalProps> = ({
   onCancel,
   noCancelBtn = false,
   loading = false,
+  htmlText = false,
 }) => {
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
 
       <DialogContent>
-        <DialogContentText>{description}</DialogContentText>
+        <DialogContentText>
+          {htmlText ? (
+            <Box
+              sx={{
+                width: "100%",
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
+                overflow: "hidden",
+
+                "& img": {
+                  maxWidth: "100%",
+                  height: "auto",
+                },
+
+                "& *": {
+                  maxWidth: "100%",
+                },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: description,
+              }}
+            />
+          ) : (
+            description
+          )}
+        </DialogContentText>
       </DialogContent>
 
       <DialogActions>

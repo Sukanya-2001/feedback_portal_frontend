@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from "axios";
 import { baseUrlApi } from "../endpoints";
 import { parseCookies } from "nookies";
 import { toast } from "sonner";
-import { deleteCookieValue } from "@/util/common";
+import { deleteCookieValue } from "@/util/cookies";
 
 const axiosInstance = axios.create({
   baseURL: baseUrlApi,

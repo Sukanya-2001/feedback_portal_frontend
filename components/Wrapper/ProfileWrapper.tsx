@@ -2,7 +2,7 @@
 
 import { useProfileDetails } from "@/Functions/react-queries/auth.query";
 import { setProfileData } from "@/redux-toolkit/slices/user.slice";
-import { getCookieValue } from "@/util/common";
+import { getCookieValue } from "@/util/cookies";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -20,7 +20,6 @@ export const ProfileWrapper = async () => {
 
   useEffect(() => {
     if (profileData?.isSuccess && profileData?.data) {
-      
       dispatch(setProfileData(profileData?.data?.data));
     }
   }, [

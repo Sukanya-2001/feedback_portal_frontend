@@ -6,7 +6,7 @@ import {
   ProfileDetailsResponse,
 } from "./auth.interface";
 import { BaseApiResponse } from "@/api/common/interface";
-import { getCookieValue } from "@/util/common";
+import { getCookieValue } from "@/util/cookies";
 import { ChangePssType } from "@/Functions/schema/changePassword.schema";
 
 export const login = async (payload: { email: string; password: string }) => {

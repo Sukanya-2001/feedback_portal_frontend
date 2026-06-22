@@ -30,15 +30,32 @@ export const MiniDetails = ({
       {/* Project mini details header */}
       <Paper
         variant="outlined"
-        sx={{ p: 2.5, mb: 4, borderRadius: 3, bgcolor: "action.hover" }}
+        sx={{ p: 2.5, mb: 4, borderRadius: 3 }}
       >
         <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
           Description
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {project?.description}
-        </Typography>
-        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            width: "100%",
+            overflowWrap: "break-word",
+            wordBreak: "break-word",
+            overflow: "hidden",
+
+            "& img": {
+              maxWidth: "100%",
+              height: "auto",
+            },
+
+            "& *": {
+              maxWidth: "100%",
+            },
+          }}
+          dangerouslySetInnerHTML={{
+            __html: project?.description ?? "",
+          }}
+        />
+        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap", pt:4 }}>
           {project?.categories?.map((tag) => (
             <Chip
               key={tag?._id}

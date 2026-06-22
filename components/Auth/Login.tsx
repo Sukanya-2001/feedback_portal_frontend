@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginSchema, LoginType } from "@/Functions/schema/login.schema";
 import { useLoginFunc } from "@/Functions/react-queries/auth.query";
-import { setCookieValue } from "@/util/common";
+import { setCookieValue } from "@/util/cookies";
 import { useDispatch } from "react-redux";
 import { setProfileData } from "@/redux-toolkit/slices/user.slice";
 import { Errortxt } from "../ErrorTxt";

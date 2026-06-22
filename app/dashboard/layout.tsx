@@ -21,7 +21,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
-import { deleteCookieValue } from "@/util/common";
+import { deleteCookieValue } from "@/util/cookies";
 
 const SIDEBAR_WIDTH = 260;
 
@@ -93,118 +93,7 @@ export default function DashboardLayout({
 
   return (
     <Box sx={{ display: "flex", flexGrow: 1, minHeight: "100vh" }}>
-      {/* 1. Header (AppBar) for mobile/dashboard context */}
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { md: `calc(100% - ${SIDEBAR_WIDTH}px)` },
-          ml: { md: `${SIDEBAR_WIDTH}px` },
-          bgcolor: "background.paper",
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          boxShadow: "none",
-          color: "text.primary",
-          mt: "50px"
-        }}
-      >
-        <Toolbar
-          sx={{
-            justifyContent: "space-between",
-            minHeight: { xs: 64, md: 70 },
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {/* Hamburger for mobile */}
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 1, display: { md: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-
-            {/* Breadcrumb / Section name */}
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 700, letterSpacing: "-0.015em" }}
-            >
-              {getViewTitle()}11
-            </Typography>
-          </Box>
-
-          {/* Quick User controls */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                display: { xs: "none", sm: "block" },
-                fontWeight: 600,
-                color: "text.primary",
-              }}
-            >
-              {userData?.fullName ?? "Unkown User"}
-            </Typography>
-            <Tooltip title="User actions">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  sx={{
-                    bgcolor: "primary.main",
-                    width: 38,
-                    height: 38,
-                    fontWeight: 700,
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  {(userData?.fullName || "U").charAt(0).toUpperCase()}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem disabled>
-                <Typography variant="caption" color="text.secondary">
-                  Logged in as: <strong>{userData?.email}</strong>
-                </Typography>
-              </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={() => {
-                  handleCloseUserMenu();
-                  router.push("/dashboard/profile");
-                }}
-              >
-                <Typography align="center">My Profile</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleLogout}>
-                <ExitToAppIcon
-                  fontSize="small"
-                  sx={{ mr: 1, color: "error.main" }}
-                />
-                <Typography align="center" color="error.main">
-                  Logout
-                </Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      {/* 2. Sidebars (Mobile Drawer + Desktop Fixed Panel) */}
+      {/* 1. Sidebars (Mobile Drawer + Desktop Fixed Panel) */}
       <Box
         component="nav"
         sx={{ width: { md: SIDEBAR_WIDTH }, flexShrink: { md: 0 } }}
@@ -237,6 +126,8 @@ export default function DashboardLayout({
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: SIDEBAR_WIDTH,
+              top: "70px",
+              height: "calc(100vh - 70px)",
             },
           }}
           open
@@ -245,7 +136,7 @@ export default function DashboardLayout({
         </Drawer>
       </Box>
 
-      {/* 3. Main content frame */}
+      {/* 2. Main content frame */}
       <Box
         component="main"
         sx={{
@@ -255,10 +146,37 @@ export default function DashboardLayout({
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          // pt: { xs: 10, md: 12 }, // offset fixed Header height
           bgcolor: "#f8fafc",
         }}
       >
+        {/* Toggle Sidebar Button for Mobile */}
+        <Box
+          sx={{
+            display: { xs: "flex", md: "none" },
+            alignItems: "center",
+            mb: 3,
+            gap: 2,
+          }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              bgcolor: "background.paper",
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            {getViewTitle()}
+          </Typography>
+        </Box>
+
         {children}
       </Box>
     </Box>

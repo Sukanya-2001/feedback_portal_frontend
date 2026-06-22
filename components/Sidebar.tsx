@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { setLogout } from "@/redux-toolkit/slices/user.slice";
-import { deleteCookieValue } from "@/util/common";
+import { deleteCookieValue } from "@/util/cookies";
 import {
   Box,
   List,
@@ -78,10 +78,9 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
         bgcolor: "background.paper",
         borderRight: "1px solid",
         borderColor: "divider",
-        paddingTop:"50px"
+        paddingTop: "50px",
       }}
     >
-
       {/* Navigation List */}
       <List
         sx={{
