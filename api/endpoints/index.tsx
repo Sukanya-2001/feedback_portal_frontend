@@ -40,6 +40,9 @@ export const endpoints = {
   dashboard: {
     count: "dashboard-count",
     graph: "dashboard-graph",
+    projectByCategory: "project-by-category",
+    feedbackGrowth: "feedback-growth",
+    projectGrowth: "project-growth",
     recentFeedback: "recent-feedbacks",
   },
 };

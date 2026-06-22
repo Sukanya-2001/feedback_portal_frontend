@@ -24,10 +24,7 @@ interface PageProps {
 
 export default function ProjectFeedbacksPage({ params }: PageProps) {
   const { projectSlug } = use(params);
-  const {
-    data: project,
-    isError,
-  } = useProjectDetails(projectSlug);
+  const { data: project, isError } = useProjectDetails(projectSlug);
 
   if (isError && !project) {
     return (
@@ -83,6 +80,14 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
           {project?.projectName}
         </Typography>
       </Breadcrumbs>
+      <Chip
+            label="Saved Feedbacks"
+            color="secondary"
+            sx={{
+              ml: "auto",
+              fontWeight: 700,
+            }}
+          />
 
       {/* Title Header with Back button */}
       <Box
@@ -97,7 +102,7 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
       >
         <Stack direction="row" spacing={2}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800 }} gutterBottom>
+            <Typography variant="h5" sx={{ fontWeight: 800 }} gutterBottom>
               {project?.projectName} Feedbacks
             </Typography>
 
@@ -105,25 +110,7 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
               All bookmarked feedbacks for this project
             </Typography>
           </Box>
-
-          <Chip
-            label="Saved Feedbacks"
-            color="secondary"
-            sx={{
-              ml: "auto",
-              fontWeight: 700,
-            }}
-          />
         </Stack>
-        <Button
-          component={Link}
-          href="/dashboard/saved-feedbacks"
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          sx={{ borderRadius: 2 }}
-        >
-          Back to Others
-        </Button>
       </Box>
 
       <FeedbackDetails projectId={projectSlug} saved />

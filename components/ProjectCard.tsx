@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { getImage } from "@/api/endpoints";
 import { toast } from "sonner";
+import CommonModal from "./Common/CommonModal";
 
 interface ProjectCardProps {
   project: ProjectDetails;
@@ -29,6 +30,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, myProject }: ProjectCardProps) {
   const { userData } = useSelector((s: RootState) => s.user);
+  const [readMoreModal, setReadMoreModal] = useState<boolean>(false);
 
   // Premium CSS gradients to fall back to if image fails or is missing
   const textSeed =
@@ -46,9 +48,13 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    const url = `${window.location.origin}/projects/${project._id}`;
+    const url = `${window.location.origin}/projects/${project.slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Project feedback link copied to clipboard!");
+  };
+
+  const handleReadMore = () => {
+    setReadMoreModal(!readMoreModal);
   };
 
   return (
@@ -110,28 +116,33 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
         </Box>
 
         <Typography
-          variant="h6"
+          variant="body1"
           component="h2"
           gutterBottom
           sx={{ fontWeight: 700, lineHeight: 1.3 }}
         >
-          {project.projectName}
+          {project?.projectName}
         </Typography>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            height: 60,
-            mb: 2,
-          }}
-        >
-          {project.description}
+        <Typography variant="body2" color="text.secondary">
+          {project?.description?.length > 140
+            ? `${project.description.slice(0, 140)}... `
+            : project?.description}
+
+          {project?.description?.length > 140 && (
+            <Typography
+              component="span"
+              color="primary"
+              sx={{
+                cursor: "pointer",
+                fontWeight: 500,
+                ml: 0.5,
+              }}
+              onClick={handleReadMore}
+            >
+              Read more
+            </Typography>
+          )}
         </Typography>
 
         <Box
@@ -148,8 +159,10 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
             </Typography>
           )}
           <Typography variant="caption" color="text.secondary">
-            {project?.feedbackCount}{" "}
-            {project?.feedbackCount > 1 ? "feedbacks" : "feedback"}
+            <strong>
+              {project?.feedbackCount}{" "}
+              {project?.feedbackCount > 1 ? "feedbacks" : "feedback"}
+            </strong>
           </Typography>
         </Box>
       </CardContent>
@@ -224,6 +237,13 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
           View Website
         </Button>
       </CardActions>
+      <CommonModal
+        open={readMoreModal}
+        description={project?.description}
+        title={project?.projectName}
+        onCancel={handleReadMore}
+        noCancelBtn
+      />
     </Card>
   );
 }

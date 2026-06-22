@@ -159,7 +159,7 @@ export default function SavedFeedbacksPage() {
                     {feedback.feedbackCount > 5 && (
                       <Button
                         component={Link}
-                        href={`saved-feedbacks/${feedback.project.slug}`}
+                        href={`/dashboard/saved-feedbacks/${feedback.project.slug}`}
                         variant="outlined"
                         size="small"
                         onClick={(e) => e.stopPropagation()}

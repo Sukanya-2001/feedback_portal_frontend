@@ -28,6 +28,7 @@ export const RecentFeedbacks = () => {
       sx={{
         borderRadius: 3,
         p: 3,
+        marginTop: "30px",
       }}
     >
       <Box

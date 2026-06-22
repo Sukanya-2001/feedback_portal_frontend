@@ -46,6 +46,7 @@ export const ProjectAddEditModal = ({
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ProjectType>({
     resolver: yupResolver(ProjectSchema),
@@ -170,21 +171,6 @@ export const ProjectAddEditModal = ({
             )}
           />
 
-          {/* <Box>
-            <TextField
-              fullWidth
-              label="Project Banner Image URL"
-              placeholder="e.g. https://images.unsplash.com/... (optional)"
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
-            />
-            <FormHelperText>
-              Provide a direct URL to an image. Left empty, a custom gradient
-              covers automatically.
-            </FormHelperText>
-          </Box> */}
-
           <Box>
             <Controller
               name="image"
@@ -251,10 +237,6 @@ export const ProjectAddEditModal = ({
             {errors.image && (
               <FormHelperText error>{errors.image.message}</FormHelperText>
             )}
-            <FormHelperText>
-              Provide an image file. Left empty, a custom gradient covers
-              automatically.
-            </FormHelperText>
           </Box>
 
           <Box>
@@ -264,6 +246,7 @@ export const ProjectAddEditModal = ({
               render={({ field }) => (
                 <Autocomplete
                   multiple
+                  disableCloseOnSelect
                   options={categoryList?.data || []}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) =>
@@ -293,7 +276,7 @@ export const ProjectAddEditModal = ({
               <TextField
                 {...field}
                 fullWidth
-                label="Website Link"
+                label="Website/Repository Link"
                 placeholder="https://myproduct.com"
                 slotProps={{
                   inputLabel: { shrink: true },

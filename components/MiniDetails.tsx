@@ -13,11 +13,6 @@ export const MiniDetails = ({
       {/* Title Header with Back button */}
       <Box
         sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          gap: 2,
           mb: 4,
         }}
       >
@@ -27,18 +22,9 @@ export const MiniDetails = ({
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Manage, filter, and reply to reviews left by users for{" "}
-            {project?.projectName}.
+            {project?.projectName}
           </Typography>
         </Box>
-        <Button
-          component={Link}
-          href="/dashboard/feedbacks"
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          sx={{ borderRadius: 2 }}
-        >
-          Back to Hub
-        </Button>
       </Box>
 
       {/* Project mini details header */}

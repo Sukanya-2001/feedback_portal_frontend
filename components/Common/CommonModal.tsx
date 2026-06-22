@@ -14,9 +14,10 @@ interface CommonModalProps {
   description: string;
   actionButtonText?: string;
   cancelButtonText?: string;
-  onAction: () => void;
+  onAction?: () => void;
   onCancel: () => void;
   loading?: boolean;
+  noCancelBtn?: boolean;
 }
 
 const CommonModal: React.FC<CommonModalProps> = ({
@@ -27,39 +28,29 @@ const CommonModal: React.FC<CommonModalProps> = ({
   cancelButtonText = "Cancel",
   onAction,
   onCancel,
+  noCancelBtn = false,
   loading = false,
 }) => {
   return (
-    <Dialog
-      open={open}
-      onClose={onCancel}
-      maxWidth="sm"
-      fullWidth
-    >
+    <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
 
       <DialogContent>
-        <DialogContentText>
-          {description}
-        </DialogContentText>
+        <DialogContentText>{description}</DialogContentText>
       </DialogContent>
 
       <DialogActions>
-        <Button
-          onClick={onCancel}
-          variant="outlined"
-          disabled={loading}
-        >
-          {cancelButtonText}
-        </Button>
+        {!noCancelBtn && (
+          <Button onClick={onCancel} variant="outlined" disabled={loading}>
+            {cancelButtonText}
+          </Button>
+        )}
 
-        <Button
-          onClick={onAction}
-          variant="contained"
-          disabled={loading}
-        >
-          {actionButtonText}
-        </Button>
+        {onAction && (
+          <Button onClick={onAction} variant="contained" disabled={loading}>
+            {actionButtonText}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

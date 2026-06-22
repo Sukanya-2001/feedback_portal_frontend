@@ -104,6 +104,7 @@ export default function DashboardLayout({
           borderColor: "divider",
           boxShadow: "none",
           color: "text.primary",
+          mt: "50px"
         }}
       >
         <Toolbar
@@ -129,7 +130,7 @@ export default function DashboardLayout({
               variant="h6"
               sx={{ fontWeight: 700, letterSpacing: "-0.015em" }}
             >
-              {getViewTitle()}
+              {getViewTitle()}11
             </Typography>
           </Box>
 

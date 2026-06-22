@@ -19,10 +19,7 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
   const { projectId } = use(params);
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
 
-  const {
-    data: project,
-    isError,
-  } = useProjectDetails(projectId);
+  const { data: project, isError } = useProjectDetails(projectId);
 
   if (!isLoggedIn || !userData) return null;
 
@@ -77,7 +74,9 @@ export default function ProjectFeedbacksPage({ params }: PageProps) {
           color="text.primary"
           sx={{ fontWeight: 600 }}
         >
-          {project?.projectName}
+          {!!project?.projectName && project.projectName?.length > 10
+            ? `${project?.projectName.slice(0, 10)}...`
+            : project?.projectName}
         </Typography>
       </Breadcrumbs>
 

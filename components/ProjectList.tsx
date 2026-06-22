@@ -43,7 +43,7 @@ export const ProjectList = ({
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    const url = `${window.location.origin}/projects/${projects._id}`;
+    const url = `${window.location.origin}/projects/${projects.slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Project feedback link copied to clipboard!");
   };
