@@ -21,6 +21,7 @@ import { setLogout } from "@/redux-toolkit/slices/user.slice";
 import { useDispatch } from "react-redux";
 import { Errortxt } from "../ErrorTxt";
 import { useRouter } from "next/navigation";
+import PasswordTextField from "@/ui/PasswordTextField";
 
 export const ChangePassword = () => {
   const dispatch = useDispatch();
@@ -78,17 +79,11 @@ export const ChangePassword = () => {
           }}
         >
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
               label="Current Password"
-              type="password"
               placeholder="Enter current password..."
               {...register("old_password")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
             />
             {!!errors?.old_password && (
               <Errortxt msg={errors.old_password?.message ?? ""} />
@@ -98,17 +93,11 @@ export const ChangePassword = () => {
           <Divider />
 
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
               label="New Password"
-              type="password"
               placeholder="Enter new password..."
               {...register("new_password")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
             />
             {!!errors?.new_password && (
               <Errortxt msg={errors.new_password?.message ?? ""} />
@@ -116,17 +105,11 @@ export const ChangePassword = () => {
           </Box>
 
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
               label="Confirm New Password"
-              type="password"
               placeholder="Re-enter the new password..."
               {...register("confirm_password")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
             />
             {!!errors?.confirm_password && (
               <Errortxt msg={errors.confirm_password?.message ?? ""} />

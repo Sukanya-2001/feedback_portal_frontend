@@ -1,9 +1,4 @@
-import {
-  Box,
-  TextField,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import { Box, TextField, Button, CircularProgress } from "@mui/material";
 import { SignUpSchema, SignUpType } from "../../Functions/schema/signup.schema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -12,6 +7,7 @@ import { Errortxt } from "../ErrorTxt";
 import { useSignUpFunc } from "@/Functions/react-queries/auth.query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import PasswordTextField from "@/ui/PasswordTextField";
 
 export const SignUp = () => {
   const router = useRouter();
@@ -67,15 +63,11 @@ export const SignUp = () => {
         </div>
 
         <div>
-          <TextField
+          <PasswordTextField
             fullWidth
             label="Password"
-            type="password"
             placeholder="Enter your password..."
             {...register("password")}
-            slotProps={{
-              inputLabel: { shrink: true },
-            }}
           />
           {!!errors.password && (
             <Errortxt msg={errors.password?.message ?? ""} />
@@ -83,15 +75,11 @@ export const SignUp = () => {
         </div>
 
         <div>
-          <TextField
+          <PasswordTextField
             fullWidth
             label="Confirm Password"
-            type="password"
-            placeholder="Re-enter your password..."
+            placeholder="Re-enter new password..."
             {...register("confirm_password")}
-            slotProps={{
-              inputLabel: { shrink: true },
-            }}
           />
           {!!errors.confirm_password && (
             <Errortxt msg={errors.confirm_password?.message ?? ""} />

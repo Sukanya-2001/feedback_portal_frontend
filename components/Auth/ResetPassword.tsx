@@ -14,6 +14,7 @@ import { useResetPassword } from "@/Functions/react-queries/auth.query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Errortxt } from "../ErrorTxt";
+import PasswordTextField from "@/ui/PasswordTextField";
 
 export const ResetPassword = ({ handleChangeStep, email }: ChildProps) => {
   const router = useRouter();
@@ -80,30 +81,22 @@ export const ResetPassword = ({ handleChangeStep, email }: ChildProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
-              label="New Password"
-              type="password"
-              placeholder="Enter your password"
+              label="Password"
+              placeholder="Enter your password..."
               {...register("password")}
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
             />
             {!!errors.password && (
               <Errortxt msg={errors.password?.message ?? ""} />
             )}
           </Box>
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
               label="Confirm Password"
-              type="password"
-              placeholder="Repeat new password"
+              placeholder="Repeat new password..."
               {...register("confirm_password")}
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
             />
             {!!errors.confirm_password && (
               <Errortxt msg={errors.confirm_password?.message ?? ""} />

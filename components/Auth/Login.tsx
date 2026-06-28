@@ -11,6 +11,7 @@ import { setProfileData } from "@/redux-toolkit/slices/user.slice";
 import { Errortxt } from "../ErrorTxt";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import PasswordTextField from "@/ui/PasswordTextField";
 
 export const Login = () => {
   const router = useRouter();
@@ -63,15 +64,11 @@ export const Login = () => {
 
         <Box>
           <Box>
-            <TextField
+            <PasswordTextField
               fullWidth
               label="Password"
-              type="password"
               placeholder="Enter your password..."
               {...register("password")}
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
             />
             {!!errors.password && (
               <Errortxt msg={errors.password?.message ?? ""} />
