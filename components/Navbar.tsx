@@ -180,7 +180,7 @@ export default function Navbar() {
               letterSpacing: "-0.02em",
             }}
           >
-            Feedback<span style={{ color: "#4f46e5" }}>Portal</span>
+            1Feedback<span style={{ color: "#4f46e5" }}>Portal</span>
           </Typography>
 
           {/* Desktop Navigation Links */}
