@@ -136,6 +136,24 @@ export default function Navbar() {
               >
                 <Typography align="center">Browse Projects</Typography>
               </MenuItem>
+              {!isLoggedIn && (
+                <>
+                  <MenuItem
+                    component={Link}
+                    href="/auth/signup"
+                    onClick={handleCloseNavMenu}
+                  >
+                    <Typography align="center">Sign up</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    href="/auth/login"
+                    onClick={handleCloseNavMenu}
+                  >
+                    <Typography align="center">Login</Typography>
+                  </MenuItem>
+                </>
+              )}
             </Menu>
           </Box>
 
@@ -290,7 +308,7 @@ export default function Navbar() {
                 </Menu>
               </Box>
             ) : (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
                 <Button
                   component={Link}
                   href="/auth/login"

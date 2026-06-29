@@ -84,12 +84,12 @@ export default function Home() {
                 </Typography>
                 <Typography
                   variant="h6"
-                  color="text.secondary"
                   sx={{
                     mb: 4,
                     fontWeight: 400,
                     lineHeight: 1.6,
                     maxWidth: "540px",
+                    color: { xs: "text.primary", md: "text.secondary" },
                   }}
                 >
                   An open feedback hub where developers can showcase their
@@ -155,8 +155,10 @@ export default function Home() {
                     </Typography>
                     <Typography
                       variant="body2"
-                      color="text.secondary"
-                      sx={{ fontWeight: 500 }}
+                      sx={{
+                        fontWeight: 500,
+                        color: { xs: "text.primary", md: "text.secondary" },
+                      }}
                     >
                       Registered Projects
                     </Typography>
@@ -171,8 +173,10 @@ export default function Home() {
                     </Typography>
                     <Typography
                       variant="body2"
-                      color="text.secondary"
-                      sx={{ fontWeight: 500 }}
+                      sx={{
+                        fontWeight: 500,
+                        color: { xs: "text.primary", md: "text.secondary" },
+                      }}
                     >
                       Total Feedbacks Left
                     </Typography>
@@ -191,7 +195,10 @@ export default function Home() {
                   }}
                 >
                   <ShowChartIcon sx={{ color: "success.main", fontSize: 28 }} />
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{ color: { xs: "text.primary", md: "text.secondary" } }}
+                  >
                     <strong>100% open-access</strong>. Anyone can browse
                     products and submit suggestions without logging in.
                   </Typography>
@@ -241,7 +248,10 @@ export default function Home() {
                 >
                   1. Showcase Project
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{ color: { xs: "text.primary", md: "text.secondary" } }}
+                >
                   Create a developer account, add your project details, website,
                   tags, and set up your public profile page.
                 </Typography>
@@ -275,7 +285,10 @@ export default function Home() {
                 >
                   2. Share Public Link
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{ color: { xs: "text.primary", md: "text.secondary" } }}
+                >
                   Any guest user or client can visit your project details page,
                   review features, and submit comments and reviews without
                   logging in.
@@ -310,7 +323,10 @@ export default function Home() {
                 >
                   3. Analyze & Grow
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{ color: { xs: "text.primary", md: "text.secondary" } }}
+                >
                   View aggregated feedback metrics on your dashboard. Filter
                   feedbacks by project to identify bottlenecks and new features.
                 </Typography>
