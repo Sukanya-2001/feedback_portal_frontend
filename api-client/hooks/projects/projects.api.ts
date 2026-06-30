@@ -43,12 +43,37 @@ export const projectList = async ({
 export const allProjectList = async ({
   page,
   limit,
+  category,
+  search,
+  sortBy,
 }: {
   page: number;
   limit: number;
+  category?: string;
+  search?: string;
+  sortBy?: string;
 }) => {
+  const queryParams: Record<string, string | number> = {
+    page,
+    limit,
+  };
+
+  if (category && category !== "all") {
+    queryParams.category = category;
+  }
+
+  if (search?.trim()) {
+    queryParams.search = search.trim();
+  }
+
+  if (sortBy?.trim()) {
+    queryParams.sortBy = sortBy.trim();
+  }
   const response = await axiosInstance.get<ProjectListResponse>(
-    `${endpoints.projects.allProjectList}?page=${page}&limit=${limit}`,
+    endpoints.projects.allProjectList,
+    {
+      params: queryParams,
+    },
   );
   const data = response.data.data;
   return data;

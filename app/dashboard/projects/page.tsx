@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import {
@@ -28,6 +28,11 @@ import { useDebounce } from "@/util/useDebounce";
 import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
 
 export default function MyProjectsPage() {
+  const LIMIT = 10;
+
+  const [page, setPage] = useState(1);
+  const [projects, setProjects] = useState<ProjectDetails[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
   const [addEditModalOpen, setAddEditModalOpen] = useState(false);
   const { data: categoryList, isPending } = useCategoryList();
@@ -36,9 +41,9 @@ export default function MyProjectsPage() {
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const { data, isLoading } = useProjectList(
-    1,
-    10,
+  const { data, isLoading, isFetching } = useProjectList(
+    page,
+    LIMIT,
     selectedTag,
     debouncedSearch,
   );
@@ -48,6 +53,47 @@ export default function MyProjectsPage() {
   const handleCloseModal = () => {
     setAddEditModalOpen(false);
   };
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetching || !hasMore) return;
+
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [isFetching, hasMore],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (page === 1) {
+      setProjects(data.projects);
+    } else {
+      setProjects((prev) => [...prev, ...data.projects]);
+    }
+
+    setHasMore(page < data.totalPages);
+  }, [data, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setProjects([]);
+    setHasMore(true);
+  }, [selectedTag, debouncedSearch]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -146,7 +192,7 @@ export default function MyProjectsPage() {
       </Paper>
 
       {/* Projects Grid List */}
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <Grid container spacing={3}>
           {Array.from({ length: 6 }).map((_, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={index}>
@@ -200,10 +246,23 @@ export default function MyProjectsPage() {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          {data?.projects.map((project: ProjectDetails) => (
-            <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={project._id}>
+          {projects.map((project, index) => (
+            <Grid
+              size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+              key={project._id}
+              ref={index === projects.length - 1 ? lastProjectRef : undefined}
+            >
               {/* Box container wrapping the Card to add management overlay actions */}
               <ProjectList projects={project} myProject />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+      {isFetching && page > 1 && (
+        <Grid container spacing={4} sx={{ mt: 2 }}>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+              <ProjectListSkeleton />
             </Grid>
           ))}
         </Grid>

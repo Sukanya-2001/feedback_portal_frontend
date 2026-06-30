@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Typography,
   Grid,
@@ -14,6 +14,7 @@ import {
   MenuItem,
   Stack,
   Container,
+  Skeleton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
@@ -21,15 +22,71 @@ import { useAllProjectList } from "@/Functions/react-queries/projects.query";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { ProjectList } from "@/components/ProjectList";
 import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
+import { useDebounce } from "@/util/useDebounce";
+import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 
 export default function ProjectsPage() {
+  const LIMIT = 10;
+
+  const [page, setPage] = useState(1);
+  const [projects, setProjects] = useState<ProjectDetails[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const { data: categoryList } = useCategoryList();
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const { data, isLoading } = useAllProjectList(1, 10);
+  const { data: categoryList, isPending } = useCategoryList();
+
+  const { data, isLoading, isFetching } = useAllProjectList(
+    page,
+    LIMIT,
+    selectedTag,
+    debouncedSearch,
+    sortBy,
+  );
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetching || !hasMore) return;
+
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [isFetching, hasMore],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (page === 1) {
+      setProjects(data.projects);
+    } else {
+      setProjects((prev) => [...prev, ...data.projects]);
+    }
+
+    setHasMore(page < data.totalPages);
+  }, [data, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setProjects([]);
+    setHasMore(true);
+  }, [selectedTag, debouncedSearch, sortBy]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -118,22 +175,34 @@ export default function ProjectsPage() {
               onClick={() => setSelectedTag("all")}
               sx={{ fontWeight: 600 }}
             />
-            {categoryList.data.map((tag) => (
-              <Chip
-                key={tag?._id}
-                label={tag?.name}
-                clickable
-                color={selectedTag === tag?._id ? "primary" : "default"}
-                onClick={() => setSelectedTag(tag?._id)}
-                sx={{ fontWeight: 600 }}
-              />
-            ))}
+            {isPending
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    variant="rounded"
+                    width={80}
+                    height={25}
+                    sx={{ borderRadius: 4 }}
+                  />
+                ))
+              : !!categoryList?.data &&
+                categoryList.data?.length > 0 &&
+                categoryList.data.map((tag) => (
+                  <Chip
+                    key={tag._id}
+                    label={tag.name}
+                    size="small"
+                    clickable
+                    onClick={() => setSelectedTag(tag._id)}
+                    color={selectedTag === tag._id ? "primary" : "default"}
+                  />
+                ))}
           </Stack>
         </Box>
       )}
 
       {/* Grid List of Projects */}
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <Grid container spacing={3}>
           {Array.from({ length: 6 }).map((_, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={index}>
@@ -152,10 +221,23 @@ export default function ProjectsPage() {
         </Box>
       ) : (
         <Grid container spacing={4}>
-          {data?.projects?.map((project) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={project._id}>
+          {projects?.map((project, index) => (
+            <Grid
+              size={{ xs: 12, sm: 6, md: 4 }}
+              key={project._id}
+              ref={index === projects.length - 1 ? lastProjectRef : undefined}
+            >
               {/* Box container wrapping the Card to add management overlay actions */}
               <ProjectList projects={project} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+      {isFetching && page > 1 && (
+        <Grid container spacing={4} sx={{ mt: 2 }}>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+              <ProjectListSkeleton />
             </Grid>
           ))}
         </Grid>

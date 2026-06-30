@@ -21,10 +21,16 @@ export const useProjectList = (
   });
 };
 
-export const useAllProjectList = (page: number, limit: number) => {
+export const useAllProjectList = (
+  page: number,
+  limit: number,
+  category?: string,
+  search?: string,
+  sortBy?: string,
+) => {
   return useQuery({
-    queryKey: [allkeys.ALL_PROJECT_LIST],
-    queryFn: () => allProjectList({ page, limit }),
+    queryKey: [allkeys.ALL_PROJECT_LIST, page, limit, category, search, sortBy],
+    queryFn: () => allProjectList({ page, limit, category, search, sortBy }),
   });
 };
 
