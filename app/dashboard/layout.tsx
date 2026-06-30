@@ -72,14 +72,6 @@ export default function DashboardLayout({
     setAnchorElUser(null);
   };
 
-  const handleLogout = async () => {
-    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
-    await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
-    dispatch(setLogout());
-    handleCloseUserMenu();
-    router.push("/auth/login");
-  };
-
   // Get current view title based on path
   const getViewTitle = () => {
     if (pathname === "/dashboard") return "Overview";

@@ -16,10 +16,10 @@ export async function setCookieValue(key: string, value: string | number) {
 
 export async function getCookieValue(key: string){
   const cookieStore = await cookies();
-  return cookieStore.get(key)?.value;
+  return cookieStore?.get(key)?.value;
 }
 
 export async function deleteCookieValue(key: string) {
   const cookieStore = await cookies();
-  cookieStore.delete(key);
+  cookieStore?.delete(key);
 }

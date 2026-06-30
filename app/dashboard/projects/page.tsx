@@ -25,6 +25,7 @@ import { ProjectAddEditModal } from "@/components/ProjectAddEditModal";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { useDebounce } from "@/util/useDebounce";
+import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
 
 export default function MyProjectsPage() {
   const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
@@ -35,7 +36,12 @@ export default function MyProjectsPage() {
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const { data } = useProjectList(1, 10, selectedTag, debouncedSearch);
+  const { data, isLoading } = useProjectList(
+    1,
+    10,
+    selectedTag,
+    debouncedSearch,
+  );
 
   if (!isLoggedIn || !userData) return null;
 
@@ -140,7 +146,15 @@ export default function MyProjectsPage() {
       </Paper>
 
       {/* Projects Grid List */}
-      {data?.projects?.length === 0 ? (
+      {isLoading ? (
+        <Grid container spacing={3}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={index}>
+              <ProjectListSkeleton />
+            </Grid>
+          ))}
+        </Grid>
+      ) : data?.projects?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{

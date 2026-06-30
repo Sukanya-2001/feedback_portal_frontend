@@ -19,7 +19,6 @@ import LanguageIcon from "@mui/icons-material/Language";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useProjectDetails } from "@/Functions/react-queries/projects.query";
-import { getImage } from "@/api/endpoints";
 import { useFeedbackList } from "@/Functions/react-queries/feedbacks.query";
 import ProjectDetailsSkeleton from "@/components/Skeleton/ProjectDetailsSkeleton";
 
@@ -96,7 +95,7 @@ export default function ProjectDetailPage({
             {project?.image ? (
               <Box
                 component="img"
-                src={getImage(project.image)}
+                src={project.image}
                 alt={project.projectName}
                 sx={{
                   width: "100%",

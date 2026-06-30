@@ -25,7 +25,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import { getImage } from "@/api/endpoints";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -53,7 +52,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+    console.log('LOGOUT')
+    await deleteCookieValue(process.env.NEXT_PUBLIC_ACCESS_TOKEN!);
     await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
     dispatch(setLogout());
     handleCloseUserMenu();
@@ -268,7 +268,7 @@ export default function Navbar() {
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
                       src={
-                        userData?.image ? getImage(userData.image) : undefined
+                        userData?.image ? userData.image : undefined
                       }
                       sx={{
                         bgcolor: "primary.main",

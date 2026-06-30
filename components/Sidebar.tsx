@@ -56,7 +56,7 @@ export default function Sidebar({ onCloseMobileDrawer }: SidebarProps) {
   ];
 
   const handleLogout = async () => {
-    await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+    await deleteCookieValue(process.env.NEXT_PUBLIC_ACCESS_TOKEN!);
     await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
     dispatch(setLogout());
     if (onCloseMobileDrawer) onCloseMobileDrawer();

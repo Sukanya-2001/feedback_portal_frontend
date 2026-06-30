@@ -19,7 +19,6 @@ import {
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
-import { getImage } from "@/api/endpoints";
 import { toast } from "sonner";
 import CommonModal from "./Common/CommonModal";
 
@@ -76,7 +75,7 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
       {project.image ? (
         <CardMedia
           component="img"
-          image={getImage(project.image)}
+          image={project.image}
           alt={project.projectName}
           sx={{
             height: 220,

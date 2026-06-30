@@ -9,6 +9,7 @@ import {
   Autocomplete,
   DialogActions,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import { LibraryAdd as LibraryAddIcon } from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form";
@@ -23,7 +24,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { allkeys } from "@/Functions/react-queries/allKeys";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
-import { getImage } from "@/api/endpoints";
 import ReactQuill from "./TextEditor/ReactQuill";
 import { Errortxt } from "./ErrorTxt";
 
@@ -41,14 +41,14 @@ export const ProjectAddEditModal = ({
   const editingProject = !!projects;
   const queryClient = useQueryClient();
   const { data: categoryList } = useCategoryList();
-  const { mutateAsync: addMutate } = useProjectCreate();
-  const { mutateAsync: updateMutate } = useProjectUpdate();
+  const { mutateAsync: addMutate, isPending: addPending } = useProjectCreate();
+  const { mutateAsync: updateMutate, isPending: updatePending } =
+    useProjectUpdate();
 
   const {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<ProjectType>({
     resolver: yupResolver(ProjectSchema),
@@ -220,7 +220,7 @@ export const ProjectAddEditModal = ({
                         src={
                           field.value instanceof File
                             ? URL.createObjectURL(field.value)
-                            : getImage(field.value)
+                            : field.value
                         }
                         alt="Preview"
                         style={{
@@ -293,8 +293,19 @@ export const ProjectAddEditModal = ({
           <Button onClick={onClose} color="inherit">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" color="primary">
-            {editingProject ? "Update Project" : "Add Project"}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={addPending || updatePending}
+          >
+            {addPending || updatePending ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : editingProject ? (
+              "Update Project"
+            ) : (
+              "Add Project"
+            )}
           </Button>
         </DialogActions>
       </form>

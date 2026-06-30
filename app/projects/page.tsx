@@ -20,6 +20,7 @@ import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import { useAllProjectList } from "@/Functions/react-queries/projects.query";
 import { useCategoryList } from "@/Functions/react-queries/categories.query";
 import { ProjectList } from "@/components/ProjectList";
+import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
 
 export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,7 +29,7 @@ export default function ProjectsPage() {
 
   const { data: categoryList } = useCategoryList();
 
-  const { data } = useAllProjectList(1, 10);
+  const { data, isLoading } = useAllProjectList(1, 10);
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
@@ -132,7 +133,15 @@ export default function ProjectsPage() {
       )}
 
       {/* Grid List of Projects */}
-      {data?.projects?.length === 0 ? (
+      {isLoading ? (
+        <Grid container spacing={3}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={index}>
+              <ProjectListSkeleton />
+            </Grid>
+          ))}
+        </Grid>
+      ) : data?.projects?.length === 0 ? (
         <Box sx={{ py: 10, textAlign: "center" }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
             No projects matched your search

@@ -22,7 +22,6 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { allkeys } from "@/Functions/react-queries/allKeys";
 import { Errortxt } from "../ErrorTxt";
-import { getImage } from "@/api/endpoints";
 
 export const UpdateProfile = () => {
   const queryClient = useQueryClient();
@@ -117,7 +116,7 @@ export const UpdateProfile = () => {
                         profileImage
                           ? profileImage
                           : userData?.image
-                            ? getImage(userData.image)
+                            ? userData.image
                             : ""
                       }
                       sx={{

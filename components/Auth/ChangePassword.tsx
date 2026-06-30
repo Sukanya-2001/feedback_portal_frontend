@@ -39,7 +39,7 @@ export const ChangePassword = () => {
       onSuccess: async (res) => {
         if (res.status === 200) {
           toast.success("Password changed successfully. Please login again");
-          await deleteCookieValue(process.env.NEXT_VALUE_ACCESS_TOKEN!);
+          await deleteCookieValue(process.env.NEXT_PUBLIC_ACCESS_TOKEN!);
           await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
           dispatch(setLogout());
           router.push("/auth/login");
