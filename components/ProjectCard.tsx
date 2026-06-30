@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { toast } from "sonner";
 import CommonModal from "./Common/CommonModal";
+import { formatDateTime } from "@/util/common";
 
 interface ProjectCardProps {
   project: ProjectDetails;
@@ -179,6 +180,9 @@ export default function ProjectCard({ project, myProject }: ProjectCardProps) {
             </strong>
           </Typography>
         </Box>
+        <Typography variant="caption" color="text.secondary">
+          Added on: <strong>{formatDateTime(project?.createdAt)}</strong>
+        </Typography>
       </CardContent>
 
       <CardActions

@@ -9,11 +9,17 @@ export const ProjectSchema = yup.object({
     .required("Project name is required"),
   description: yup
     .string()
-    .trim()
-    .transform((value) => (value ? value.replace(/\r\n/g, "\n").trim() : value))
-    .min(20, "Description must be at least 20 charecters")
-    .max(10000, "Description must be at most 10000 charecters")
-    .required("Description is required"),
+    .test(
+      "max-text",
+      "Description must be at most 10000 characters",
+      (value) => {
+        if (!value) return false;
+
+        const text = value.replace(/<[^>]*>/g, "");
+
+        return text.length <= 10000;
+      },
+    ),
   websiteLink: yup
     .string()
     .trim()

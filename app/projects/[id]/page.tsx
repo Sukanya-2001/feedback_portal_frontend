@@ -21,6 +21,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useProjectDetails } from "@/Functions/react-queries/projects.query";
 import { useFeedbackList } from "@/Functions/react-queries/feedbacks.query";
 import ProjectDetailsSkeleton from "@/components/Skeleton/ProjectDetailsSkeleton";
+import { formatDateTime } from "@/util/common";
 
 export default function ProjectDetailPage({
   params,
@@ -187,8 +188,7 @@ export default function ProjectDetailPage({
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <CalendarTodayIcon color="action" />
                   <Typography variant="body2" color="text.secondary">
-                    Added on:{" "}
-                    {new Date(project?.createdAt || "").toLocaleDateString()}
+                    Added on: {formatDateTime(project?.createdAt ?? '')}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
