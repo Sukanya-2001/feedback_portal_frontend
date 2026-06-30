@@ -11,7 +11,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   IconButton,
   Menu,
@@ -185,36 +184,70 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <Box
-            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, gap: 1 }}
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, gap: 3, ml: 2 }}
           >
-            <Button
+            <Typography
               component={Link}
               href="/"
               sx={{
+                position: "relative",
                 color: isActive("/") ? "primary.main" : "text.secondary",
-                fontWeight: isActive("/") ? 700 : 500,
-                backgroundColor: isActive("/")
-                  ? "rgba(79, 70, 229, 0.08)"
-                  : "transparent",
+                fontWeight: isActive("/") ? 600 : 500,
+                textDecoration: "none",
+                fontSize: "0.95rem",
+                py: 0.5,
+                transition: "color 0.2s ease-in-out",
+                "&:hover": {
+                  color: "primary.main",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -4,
+                  left: 0,
+                  width: isActive("/") ? "100%" : "0%",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transition: "width 0.2s ease-in-out",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
               }}
             >
               Home
-            </Button>
-            <Button
+            </Typography>
+            <Typography
               component={Link}
               href="/projects"
               sx={{
-                color: isActive("/projects")
-                  ? "primary.main"
-                  : "text.secondary",
-                fontWeight: isActive("/projects") ? 700 : 500,
-                backgroundColor: isActive("/projects")
-                  ? "rgba(79, 70, 229, 0.08)"
-                  : "transparent",
+                position: "relative",
+                color: isActive("/projects") ? "primary.main" : "text.secondary",
+                fontWeight: isActive("/projects") ? 600 : 500,
+                textDecoration: "none",
+                fontSize: "0.95rem",
+                py: 0.5,
+                transition: "color 0.2s ease-in-out",
+                "&:hover": {
+                  color: "primary.main",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -4,
+                  left: 0,
+                  width: isActive("/projects") ? "100%" : "0%",
+                  height: "2px",
+                  backgroundColor: "primary.main",
+                  transition: "width 0.2s ease-in-out",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
               }}
             >
               Browse Projects
-            </Button>
+            </Typography>
           </Box>
 
           {/* Auth/User Action Controls */}
@@ -308,29 +341,69 @@ export default function Navbar() {
                 </Menu>
               </Box>
             ) : (
-              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-                <Button
+              <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, alignItems: "center" }}>
+                <Typography
                   component={Link}
                   href="/auth/login"
-                  variant="text"
-                  color="primary"
-                  sx={{ fontWeight: 600 }}
+                  sx={{
+                    position: "relative",
+                    color: isActive("/auth/login") ? "primary.main" : "text.secondary",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    fontSize: "0.95rem",
+                    py: 0.5,
+                    transition: "color 0.2s ease-in-out",
+                    "&:hover": {
+                      color: "primary.main",
+                    },
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: -4,
+                      left: 0,
+                      width: isActive("/auth/login") ? "100%" : "0%",
+                      height: "2px",
+                      backgroundColor: "primary.main",
+                      transition: "width 0.2s ease-in-out",
+                    },
+                    "&:hover::after": {
+                      width: "100%",
+                    },
+                  }}
                 >
                   Login
-                </Button>
-                <Button
+                </Typography>
+                <Typography
                   component={Link}
                   href="/auth/signup"
-                  variant="contained"
-                  color="primary"
                   sx={{
+                    position: "relative",
+                    color: "primary.main",
                     fontWeight: 600,
-                    borderRadius: 2,
-                    px: 2.5,
+                    textDecoration: "none",
+                    fontSize: "0.95rem",
+                    py: 0.5,
+                    transition: "color 0.2s ease-in-out",
+                    "&:hover": {
+                      color: "primary.dark",
+                    },
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: -4,
+                      left: 0,
+                      width: isActive("/auth/signup") ? "100%" : "0%",
+                      height: "2px",
+                      backgroundColor: "primary.main",
+                      transition: "width 0.2s ease-in-out",
+                    },
+                    "&:hover::after": {
+                      width: "100%",
+                    },
                   }}
                 >
                   Sign Up
-                </Button>
+                </Typography>
               </Box>
             )}
           </Box>

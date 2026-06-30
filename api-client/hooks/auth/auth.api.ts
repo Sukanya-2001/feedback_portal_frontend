@@ -76,12 +76,13 @@ export const profileDetails = async () => {
   const accessToken = await getCookieValue(
     process.env.NEXT_PUBLIC_ACCESS_TOKEN!,
   );
-  if (!!accessToken) {
+  if (accessToken) {
     const response = await axiosInstance.get<ProfileDetailsResponse>(
       endpoints.auth.profileDetails,
     );
     return response.data;
   }
+  return null;
 };
 
 export const profileUpdate = async (payload: FormData) => {
