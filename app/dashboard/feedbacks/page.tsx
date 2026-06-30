@@ -173,9 +173,10 @@ export default function FeedbacksPage() {
                           height: 63, // Ensures aligned text
                           mb: 2.5,
                         }}
-                      >
-                        {p.description}
-                      </Typography>
+                        dangerouslySetInnerHTML={{
+                          __html: p?.description ?? "",
+                        }}
+                      />
                     </CardContent>
 
                     {/* Bottom Status bar */}

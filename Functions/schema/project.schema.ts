@@ -9,6 +9,7 @@ export const ProjectSchema = yup.object({
     .required("Project name is required"),
   description: yup
     .string()
+    .required("Description is required")
     .test(
       "max-text",
       "Description must be at most 10000 characters",
