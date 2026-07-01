@@ -28,7 +28,7 @@ export default function FeedbacksPage() {
   const [page, setPage] = useState(1);
   const [projects, setProjects] = useState<ProjectDetails[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const { data, isLoading, isFetching } = useProjectList(1, LIMIT);
+  const { data, isLoading, isFetching } = useProjectList(page, LIMIT);
 
   const observer = useRef<IntersectionObserver | null>(null);
 
