@@ -16,7 +16,7 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import FeedbackSkeleton from "./Skeleton/FeedbackSkeleton";
 import { useDebounce } from "@/util/useDebounce";
 import { formatDateTime } from "@/util/common";
+import { FeedbackData } from "@/api/hooks/feedbacks/feedback.interface";
 
 export const FeedbackDetails = ({
   projectId,
@@ -34,16 +35,24 @@ export const FeedbackDetails = ({
   projectId: string;
   saved?: boolean;
 }) => {
+  const LIMIT = 20;
+
+  const [page, setPage] = useState(1);
+  const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const {
-    data: feedbacks,
-    isLoading,
-    refetch,
-  } = useFeedbackList(1, 10, projectId, saved, sortBy, debouncedSearch);
+  const { data, isLoading, isFetching, refetch } = useFeedbackList(
+    page,
+    LIMIT,
+    projectId,
+    saved,
+    sortBy,
+    debouncedSearch,
+  );
 
   const { mutateAsync, isPending } = useMarkAsSave();
 
@@ -52,11 +61,62 @@ export const FeedbackDetails = ({
       onSuccess: (res) => {
         if (res.status === 200) {
           toast.success("Feedback saved successfully");
-          refetch();
+
+          setFeedbacks((prev) =>
+            prev.map((item) =>
+              item._id === feedbackId
+                ? {
+                    ...item,
+                    isSaved: !item.isSaved,
+                  }
+                : item,
+            ),
+          );
         }
       },
     });
   };
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetching || !hasMore) return;
+
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [isFetching, hasMore],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (page === 1) {
+      setFeedbacks(data.feedbacks);
+    } else {
+      setFeedbacks((prev) => [...prev, ...data.feedbacks]);
+    }
+
+    setHasMore(page < data.totalPages);
+  }, [data, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setFeedbacks([]);
+    setHasMore(true);
+  }, [projectId, debouncedSearch, sortBy]);
 
   return (
     <>
@@ -114,9 +174,9 @@ export const FeedbackDetails = ({
       </Paper>
 
       {/* Feedbacks Listing */}
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <FeedbackSkeleton />
-      ) : !!feedbacks && feedbacks?.feedbacks?.length === 0 ? (
+      ) : !!data?.feedbacks && data?.feedbacks?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -141,12 +201,15 @@ export const FeedbackDetails = ({
         </Paper>
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          {feedbacks?.feedbacks?.map((f) => {
+          {feedbacks?.map((f, index) => {
             const hasReply = !!f.reply;
 
             return (
               <Paper
                 key={f._id}
+                ref={
+                  index === feedbacks.length - 1 ? lastProjectRef : undefined
+                }
                 variant="outlined"
                 sx={{ p: 3, borderRadius: 3, position: "relative" }}
               >
@@ -251,6 +314,7 @@ export const FeedbackDetails = ({
           })}
         </Box>
       )}
+      {isFetching && page > 1 && <FeedbackSkeleton />}
     </>
   );
 };

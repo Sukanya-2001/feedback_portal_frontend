@@ -92,18 +92,7 @@ export const RecentFeedbacks = () => {
             <React.Fragment key={feedback._id}>
               {index > 0 && <Divider />}
 
-              <ListItem
-                sx={{ px: 0, py: 1 }}
-                secondaryAction={
-                  <IconButton>
-                    {feedback?.isSaved ? (
-                      <BookmarkIcon />
-                    ) : (
-                      <BookmarkBorderIcon />
-                    )}
-                  </IconButton>
-                }
-              >
+              <ListItem sx={{ px: 0, py: 1 }}>
                 <ListItemText
                   primary={
                     <Box

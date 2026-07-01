@@ -1,48 +1,114 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Typography, Avatar, Paper } from "@mui/material";
 import { ChatBubbleOutlineOutlined as ChatBubbleOutlineIcon } from "@mui/icons-material";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import { FeedbackData } from "@/api/hooks/feedbacks/feedback.interface";
 import FeedbackListSkeleton from "./Skeleton/FeedbackListSkeleton";
 import { formatDateTime } from "@/util/common";
+import { useFeedbackList } from "@/Functions/react-queries/feedbacks.query";
 
 interface FeedbackListProps {
-  feedbacks: { feedbacks: FeedbackData[]; total: number } | undefined;
-  isLoading?: boolean;
+  projectId: string;
+  totalFeedback: number;
 }
 
 export default function FeedbackList({
-  feedbacks,
-  isLoading,
+  projectId,
+  totalFeedback,
 }: FeedbackListProps) {
-  const formatDate = (dateStr: string) => {
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    } catch {
-      return "Recently";
-    }
-  };
+  const LIMIT = 20;
 
-  return isLoading ? (
+  const [page, setPage] = useState(1);
+  const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const { data, isLoading, isFetching } = useFeedbackList(
+    page,
+    LIMIT,
+    projectId,
+  );
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetching || !hasMore) return;
+
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [isFetching, hasMore],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (page === 1) {
+      setFeedbacks(data.feedbacks);
+    } else {
+      setFeedbacks((prev) => [...prev, ...data.feedbacks]);
+    }
+
+    setHasMore(page < data.totalPages);
+  }, [data, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setFeedbacks([]);
+    setHasMore(true);
+  }, [projectId]);
+
+  return isLoading && page === 1 ? (
     <FeedbackListSkeleton />
   ) : (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
       <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-        Reviews & Feedbacks ({feedbacks?.total})
+        Reviews & Feedbacks ({totalFeedback})
       </Typography>
 
-      {!!feedbacks?.feedbacks && feedbacks.feedbacks?.length > 0 ? (
-        feedbacks.feedbacks.map((item) => (
+      {!!data?.feedbacks && data.feedbacks?.length === 0 ? (
+        <Paper
+          variant="outlined"
+          sx={{
+            py: 6,
+            px: 2,
+            textAlign: "center",
+            backgroundColor: "background.paper",
+            borderStyle: "dashed",
+            borderWidth: 2,
+            borderColor: "divider",
+            borderRadius: 3,
+          }}
+        >
+          <ChatBubbleOutlineIcon
+            sx={{ fontSize: 48, color: "text.disabled", mb: 2 }}
+          />
+          <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
+            No feedbacks yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Be the first to share your thoughts by filling out the feedback form
+            above!
+          </Typography>
+        </Paper>
+      ) : (
+        feedbacks.map((item, index) => (
           <Paper
             key={item._id}
             variant="outlined"
+            ref={index === feedbacks.length - 1 ? lastProjectRef : undefined}
             sx={{
               p: 2.5,
               borderRadius: 3,
@@ -143,32 +209,8 @@ export default function FeedbackList({
             </Box>
           </Paper>
         ))
-      ) : (
-        <Paper
-          variant="outlined"
-          sx={{
-            py: 6,
-            px: 2,
-            textAlign: "center",
-            backgroundColor: "background.paper",
-            borderStyle: "dashed",
-            borderWidth: 2,
-            borderColor: "divider",
-            borderRadius: 3,
-          }}
-        >
-          <ChatBubbleOutlineIcon
-            sx={{ fontSize: 48, color: "text.disabled", mb: 2 }}
-          />
-          <Typography variant="h6" sx={{ fontWeight: 700 }} gutterBottom>
-            No feedbacks yet
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Be the first to share your thoughts by filling out the feedback form
-            above!
-          </Typography>
-        </Paper>
       )}
+      {isFetching && page > 1 && <FeedbackListSkeleton />}
     </Box>
   );
 }

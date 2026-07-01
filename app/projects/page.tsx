@@ -26,7 +26,7 @@ import { useDebounce } from "@/util/useDebounce";
 import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
 
 export default function ProjectsPage() {
-  const LIMIT = 10;
+  const LIMIT = 12;
 
   const [page, setPage] = useState(1);
   const [projects, setProjects] = useState<ProjectDetails[]>([]);

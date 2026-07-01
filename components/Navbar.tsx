@@ -52,7 +52,6 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    console.log('LOGOUT')
     await deleteCookieValue(process.env.NEXT_PUBLIC_ACCESS_TOKEN!);
     await deleteCookieValue(process.env.NEXT_PUBLIC_REFRESH_TOKEN!);
     dispatch(setLogout());

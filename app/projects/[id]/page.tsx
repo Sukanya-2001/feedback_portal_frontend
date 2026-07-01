@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import FeedbackForm from "@/components/FeedbackForm";
 import FeedbackList from "@/components/FeedbackList";
@@ -22,6 +22,7 @@ import { useProjectDetails } from "@/Functions/react-queries/projects.query";
 import { useFeedbackList } from "@/Functions/react-queries/feedbacks.query";
 import ProjectDetailsSkeleton from "@/components/Skeleton/ProjectDetailsSkeleton";
 import { formatDateTime } from "@/util/common";
+import { FeedbackData } from "@/api/hooks/feedbacks/feedback.interface";
 
 export default function ProjectDetailPage({
   params,
@@ -36,7 +37,8 @@ export default function ProjectDetailPage({
     isLoading: projectLoading,
     isError,
   } = useProjectDetails(projectId);
-  const { data: feedbacks, isLoading } = useFeedbackList(1, 10, projectId);
+  const { data  } = useFeedbackList(1, 1, projectId);
+  const totalFeedback = data?.total ?? 0;
 
   if (isError && !project) {
     return (
@@ -188,7 +190,7 @@ export default function ProjectDetailPage({
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <CalendarTodayIcon color="action" />
                   <Typography variant="body2" color="text.secondary">
-                    Added on: {formatDateTime(project?.createdAt ?? '')}
+                    Added on: {formatDateTime(project?.createdAt ?? "")}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -237,7 +239,7 @@ export default function ProjectDetailPage({
               variant="h3"
               sx={{ fontWeight: 800, mt: 1, color: "primary.main" }}
             >
-              {feedbacks?.total ?? 0}
+              {totalFeedback}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Submitted by guest users and clients
@@ -249,7 +251,7 @@ export default function ProjectDetailPage({
         </Grid>
       </Grid>
       {/* List of existing feedbacks */}
-      <FeedbackList feedbacks={feedbacks} isLoading={isLoading} />
+      <FeedbackList projectId={projectId} totalFeedback ={totalFeedback}/>
     </Container>
   );
 }

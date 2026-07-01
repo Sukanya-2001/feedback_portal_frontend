@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Typography,
@@ -19,12 +19,57 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux-toolkit/store/store";
 import { useProjectList } from "@/Functions/react-queries/projects.query";
+import { ProjectDetails } from "@/api/hooks/projects/projects.interface";
+import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
 
 export default function FeedbacksPage() {
-  const { isLoggedIn, userData } = useSelector((s: RootState) => s.user);
-  const { data: projects } = useProjectList(1, 10);
+  const LIMIT = 12;
 
-  if (!isLoggedIn || !userData) return null;
+  const [page, setPage] = useState(1);
+  const [projects, setProjects] = useState<ProjectDetails[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const { data, isLoading, isFetching } = useProjectList(1, LIMIT);
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetching || !hasMore) return;
+
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
+
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [isFetching, hasMore],
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (page === 1) {
+      setProjects(data.projects);
+    } else {
+      setProjects((prev) => [...prev, ...data.projects]);
+    }
+
+    setHasMore(page < data.totalPages);
+  }, [data, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setProjects([]);
+    setHasMore(true);
+  }, []);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -43,7 +88,15 @@ export default function FeedbacksPage() {
       </Box>
 
       {/* Projects Grid */}
-      {projects?.projects?.length === 0 ? (
+      {isLoading && page === 1 ? (
+        <Grid container spacing={3}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={index}>
+              <ProjectListSkeleton />
+            </Grid>
+          ))}
+        </Grid>
+      ) : data?.projects?.length === 0 ? (
         <Paper
           variant="outlined"
           sx={{
@@ -77,7 +130,7 @@ export default function FeedbacksPage() {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          {projects?.projects?.map((p) => {
+          {projects?.map((p, index) => {
             // Premium CSS gradient logic for card highlight top border
             const textSeed =
               p?.projectName?.charCodeAt(0) +
@@ -93,7 +146,11 @@ export default function FeedbacksPage() {
             const cardGradient = gradients[textSeed % gradients.length];
 
             return (
-              <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={p._id}>
+              <Grid
+                size={{ xs: 12, sm: 6, md: 6, lg: 4 }}
+                key={p._id}
+                ref={index === projects.length - 1 ? lastProjectRef : undefined}
+              >
                 <Card
                   sx={{
                     height: "100%",
@@ -221,6 +278,15 @@ export default function FeedbacksPage() {
               </Grid>
             );
           })}
+        </Grid>
+      )}
+      {isFetching && page > 1 && (
+        <Grid container spacing={4} sx={{ mt: 2 }}>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+              <ProjectListSkeleton />
+            </Grid>
+          ))}
         </Grid>
       )}
     </Box>

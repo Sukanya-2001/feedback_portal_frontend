@@ -28,7 +28,7 @@ import { useDebounce } from "@/util/useDebounce";
 import ProjectListSkeleton from "@/components/Skeleton/ProjectListSkeleton";
 
 export default function MyProjectsPage() {
-  const LIMIT = 10;
+  const LIMIT = 12;
 
   const [page, setPage] = useState(1);
   const [projects, setProjects] = useState<ProjectDetails[]>([]);
